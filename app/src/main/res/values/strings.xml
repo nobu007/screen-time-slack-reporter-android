@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">ScreenTime Slack Reporter</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">今日の利用状況</string>
+    <string name="home_total_time">合計利用時間</string>
+    <string name="home_top_apps">アプリ別利用時間</string>
+    <string name="home_other_apps">その他</string>
+    <string name="home_send_now">今すぐ送信</string>
+    <string name="home_send_status_not_sent">未送信</string>
+    <string name="home_send_status_success">送信成功</string>
+    <string name="home_send_status_failed">送信失敗</string>
+    <string name="home_last_sent_at">最終送信: %1$s</string>
+    <string name="home_no_usage">本日の利用はありません</string>
+    <string name="home_sending">送信中…</string>
+    <string name="home_usage_access_required">使用状況へのアクセス許可が必要です</string>
+    <string name="home_grant_permission">許可する</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">設定</string>
+    <string name="settings_webhook_url">Slack Webhook URL</string>
+    <string name="settings_webhook_url_hint">https://hooks.slack.com/services/...</string>
+    <string name="settings_webhook_warning">⚠️ Webhook URLは秘匿情報です。漏洩すると第三者が投稿できるため取り扱いにご注意ください。</string>
+    <string name="settings_send_time">送信時刻</string>
+    <string name="settings_send_enabled">自動送信を有効にする</string>
+    <string name="settings_open_slack_developer">Slack開発者ページを開く</string>
+    <string name="settings_test_webhook">テスト送信</string>
+    <string name="settings_test_success">テスト送信成功！</string>
+    <string name="settings_test_failed">テスト送信失敗: %1$s</string>
+    <string name="settings_webhook_not_set">Webhook URLが設定されていません</string>
+    <string name="settings_saved">設定を保存しました</string>
+
+    <!-- Exclusions Screen -->
+    <string name="exclusions_title">対象外アプリ</string>
+    <string name="exclusions_show_excluded_only">対象外のみ表示</string>
+    <string name="exclusions_no_excluded">まだ対象外アプリがありません</string>
+    <string name="exclusions_show_all">一覧を表示</string>
+    <string name="exclusions_no_usage_today">今日使ったアプリはありません</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_settings">設定</string>
+    <string name="nav_exclusions">対象外</string>
+
+    <!-- Time Format -->
+    <string name="time_format_hours_minutes">%1$d時間%2$d分</string>
+    <string name="time_format_minutes">%1$d分</string>
+    <string name="time_format_less_than_minute">1分未満</string>
+
+    <!-- Slack Message -->
+    <string name="slack_message_header">📱 *%1$s の利用状況*\n合計: *%2$s* (目標30分との差: %3$s)</string>
+    <string name="slack_message_app_line">• %1$s - %2$s</string>
+    <string name="slack_message_other">• その他 - %1$s</string>
+    <string name="slack_test_message">📱 ScreenTime Slack Reporter からのテスト送信です。</string>
+</resources>
