@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -65,6 +66,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     var showWebhookUrl by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -73,11 +75,11 @@ fun SettingsScreen(
     LaunchedEffect(uiState.testResult) {
         when (val result = uiState.testResult) {
             is TestResult.Success -> {
-                snackbarHostState.showSnackbar("テスト送信成功！")
+                snackbarHostState.showSnackbar(context.getString(R.string.settings_test_success))
                 viewModel.clearTestResult()
             }
             is TestResult.Failure -> {
-                snackbarHostState.showSnackbar("テスト送信失敗: ${result.message}")
+                snackbarHostState.showSnackbar(context.getString(R.string.settings_test_failed, result.message))
                 viewModel.clearTestResult()
             }
             null -> {}
@@ -87,7 +89,7 @@ fun SettingsScreen(
     // 保存完了のスナックバー
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
-            snackbarHostState.showSnackbar("設定を保存しました")
+            snackbarHostState.showSnackbar(context.getString(R.string.settings_saved))
             viewModel.clearSavedFlag()
         }
     }
@@ -112,7 +114,7 @@ fun SettingsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "戻る"
+                            contentDescription = stringResource(R.string.nav_back)
                         )
                     }
                 },
@@ -197,7 +199,7 @@ private fun SettingsContent(
                     trailingIcon = {
                         IconButton(onClick = { onShowWebhookUrlChanged(!showWebhookUrl) }) {
                             Text(
-                                text = if (showWebhookUrl) "隠す" else "表示",
+                                text = if (showWebhookUrl) stringResource(R.string.settings_webhook_hide) else stringResource(R.string.settings_webhook_show),
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -328,7 +330,7 @@ private fun SettingsContent(
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("設定を保存")
+            Text(stringResource(R.string.settings_save))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -347,7 +349,7 @@ private fun TimePickerDialog(
 
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("送信時刻を選択") },
+        title = { Text(stringResource(R.string.settings_time_picker_title)) },
         text = {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -355,7 +357,7 @@ private fun TimePickerDialog(
             ) {
                 // 時
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("時")
+                    Text(stringResource(R.string.settings_time_picker_hour))
                     OutlinedTextField(
                         value = selectedHour.toString().padStart(2, '0'),
                         onValueChange = { value ->
@@ -371,7 +373,7 @@ private fun TimePickerDialog(
                 Text(":", modifier = Modifier.padding(horizontal = 8.dp))
                 // 分
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("分")
+                    Text(stringResource(R.string.settings_time_picker_minute))
                     OutlinedTextField(
                         value = selectedMinute.toString().padStart(2, '0'),
                         onValueChange = { value ->
@@ -388,12 +390,12 @@ private fun TimePickerDialog(
         },
         confirmButton = {
             Button(onClick = { onConfirm(selectedHour, selectedMinute) }) {
-                Text("OK")
+                Text(stringResource(R.string.common_ok))
             }
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) {
-                Text("キャンセル")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )
