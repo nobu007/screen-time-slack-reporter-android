@@ -191,6 +191,16 @@ private fun SettingsContent(
                     visualTransformation = if (showWebhookUrl) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                     singleLine = true,
+                    isError = uiState.webhookError != null,
+                    supportingText = {
+                        uiState.webhookError?.let { message ->
+                            Text(
+                                text = message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
                     trailingIcon = {
                         IconButton(onClick = { onShowWebhookUrlChanged(!showWebhookUrl) }) {
                             Text(
@@ -291,7 +301,7 @@ private fun SettingsContent(
                 Button(
                     onClick = onTestWebhook,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = uiState.isWebhookConfigured && !uiState.isTesting
+                    enabled = uiState.isWebhookConfigured && uiState.webhookError == null && !uiState.isTesting
                 ) {
                     if (uiState.isTesting) {
                         CircularProgressIndicator(
@@ -318,7 +328,7 @@ private fun SettingsContent(
         Button(
             onClick = onSaveSettings,
             modifier = Modifier.fillMaxWidth(),
-            enabled = uiState.hasUnsavedChanges
+            enabled = uiState.hasUnsavedChanges && uiState.webhookError == null
         ) {
             Icon(
                 imageVector = Icons.Default.Check,

@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jp.co.screentime.slackreporter.R
 import jp.co.screentime.slackreporter.data.repository.SettingsRepository
 import jp.co.screentime.slackreporter.data.repository.SlackRepository
+import jp.co.screentime.slackreporter.data.slack.SlackWebhookValidator
 import jp.co.screentime.slackreporter.workers.WorkScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +37,23 @@ class SettingsViewModel @Inject constructor(
         return url.trim()
     }
 
+    private fun validateWebhookUrl(url: String, requireNonBlank: Boolean): String? {
+        val normalizedUrl = normalizeWebhookUrl(url)
+        if (normalizedUrl.isBlank()) {
+            return if (requireNonBlank) {
+                context.getString(R.string.settings_webhook_not_set)
+            } else {
+                null
+            }
+        }
+
+        return if (SlackWebhookValidator.validate(normalizedUrl).isSuccess) {
+            null
+        } else {
+            context.getString(R.string.settings_webhook_invalid)
+        }
+    }
+
     /**
      * 設定を読み込む
      */
@@ -56,7 +74,8 @@ class SettingsViewModel @Inject constructor(
                     initialWebhookUrl = normalizedWebhookUrl,
                     initialSendEnabled = settings.sendEnabled,
                     initialSendHour = settings.sendHour,
-                    initialSendMinute = settings.sendMinute
+                    initialSendMinute = settings.sendMinute,
+                    webhookError = null
                 )
             }
         }
@@ -66,14 +85,19 @@ class SettingsViewModel @Inject constructor(
      * Webhook URLを更新
      */
     fun onWebhookUrlChanged(url: String) {
-        _uiState.update { it.copy(webhookUrl = url) }
+        _uiState.update { it.copy(webhookUrl = url, webhookError = null) }
     }
 
     /**
      * 送信有効/無効を切り替え
      */
     fun onSendEnabledChanged(enabled: Boolean) {
-        _uiState.update { it.copy(sendEnabled = enabled) }
+        _uiState.update {
+            it.copy(
+                sendEnabled = enabled,
+                webhookError = if (!enabled) null else it.webhookError
+            )
+        }
     }
 
     /**
@@ -90,6 +114,20 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
             val normalizedWebhookUrl = normalizeWebhookUrl(state.webhookUrl)
+            val validationError = validateWebhookUrl(
+                normalizedWebhookUrl,
+                requireNonBlank = state.sendEnabled
+            )
+
+            if (validationError != null) {
+                _uiState.update {
+                    it.copy(
+                        webhookUrl = normalizedWebhookUrl,
+                        webhookError = validationError
+                    )
+                }
+                return@launch
+            }
 
             settingsRepository.setWebhookUrl(normalizedWebhookUrl)
             settingsRepository.setSendEnabled(state.sendEnabled)
@@ -110,7 +148,8 @@ class SettingsViewModel @Inject constructor(
                     initialWebhookUrl = normalizedWebhookUrl,
                     initialSendEnabled = state.sendEnabled,
                     initialSendHour = state.sendHour,
-                    initialSendMinute = state.sendMinute
+                    initialSendMinute = state.sendMinute,
+                    webhookError = null
                 )
             }
         }
@@ -126,14 +165,28 @@ class SettingsViewModel @Inject constructor(
             if (normalizedWebhookUrl != rawWebhookUrl) {
                 _uiState.update { it.copy(webhookUrl = normalizedWebhookUrl) }
             }
-            if (normalizedWebhookUrl.isBlank()) {
+            val validationError = validateWebhookUrl(
+                normalizedWebhookUrl,
+                requireNonBlank = true
+            )
+            if (validationError != null) {
                 _uiState.update {
-                    it.copy(testResult = TestResult.Failure(context.getString(R.string.settings_webhook_not_set)))
+                    it.copy(
+                        webhookError = validationError,
+                        testResult = TestResult.Failure(validationError)
+                    )
                 }
                 return@launch
             }
 
-            _uiState.update { it.copy(isTesting = true, testResult = null) }
+            _uiState.update {
+                it.copy(
+                    isTesting = true,
+                    testResult = null,
+                    webhookError = null,
+                    webhookUrl = normalizedWebhookUrl
+                )
+            }
 
             val result = slackRepository.sendTestMessage(normalizedWebhookUrl)
 

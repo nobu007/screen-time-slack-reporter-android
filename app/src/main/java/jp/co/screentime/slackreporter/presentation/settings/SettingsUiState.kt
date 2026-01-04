@@ -12,6 +12,7 @@ data class SettingsUiState(
     val isTesting: Boolean = false,
     val testResult: TestResult? = null,
     val isSaved: Boolean = false,
+    val webhookError: String? = null,
 
     // 初期値
     val initialWebhookUrl: String = "",

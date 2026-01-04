@@ -35,6 +35,10 @@ class SlackWebhookClient @Inject constructor() {
     suspend fun sendMessage(webhookUrl: String, text: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
+                val validatedUrl = SlackWebhookValidator.validate(webhookUrl).getOrElse { error ->
+                    return@withContext Result.failure(error)
+                }
+
                 val json = JSONObject().apply {
                     put("text", text)
                 }
@@ -42,7 +46,7 @@ class SlackWebhookClient @Inject constructor() {
                 val requestBody = json.toString().toRequestBody(jsonMediaType)
 
                 val request = Request.Builder()
-                    .url(webhookUrl)
+                    .url(validatedUrl)
                     .post(requestBody)
                     .build()
 
