@@ -10,10 +10,10 @@ import jp.co.screentime.slackreporter.domain.usecase.GetTodayUsageUseCase
 import jp.co.screentime.slackreporter.domain.usecase.SendDailyReportUseCase
 import jp.co.screentime.slackreporter.platform.AppLabelResolver
 import jp.co.screentime.slackreporter.presentation.model.UiAppUsage
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -37,6 +37,8 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
         loadData()
         observeSendResult()
@@ -46,7 +48,8 @@ class HomeViewModel @Inject constructor(
      * データを読み込む
      */
     fun loadData() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             // Usage Access権限チェック

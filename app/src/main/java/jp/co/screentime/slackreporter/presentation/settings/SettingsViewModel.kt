@@ -32,6 +32,10 @@ class SettingsViewModel @Inject constructor(
         loadSettings()
     }
 
+    private fun normalizeWebhookUrl(url: String): String {
+        return url.trim()
+    }
+
     /**
      * 設定を読み込む
      */
@@ -40,29 +44,22 @@ class SettingsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             val settings = settingsRepository.settingsFlow.first()
+            val normalizedWebhookUrl = normalizeWebhookUrl(settings.webhookUrl)
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    webhookUrl = settings.webhookUrl,
+                    webhookUrl = normalizedWebhookUrl,
                     sendEnabled = settings.sendEnabled,
                     sendHour = settings.sendHour,
                     sendMinute = settings.sendMinute,
                     // 初期値も設定
-                    initialWebhookUrl = settings.webhookUrl,
+                    initialWebhookUrl = normalizedWebhookUrl,
                     initialSendEnabled = settings.sendEnabled,
                     initialSendHour = settings.sendHour,
                     initialSendMinute = settings.sendMinute
                 )
             }
         }
-    }
-
-    /**
-     * Webhook URLをマスクする
-     */
-    private fun maskWebhookUrl(url: String): String {
-        if (url.length < 20) return url
-        return "${url.take(8)}...${url.takeLast(4)}"
     }
 
     /**
@@ -92,13 +89,14 @@ class SettingsViewModel @Inject constructor(
     fun onSaveSettings() {
         viewModelScope.launch {
             val state = _uiState.value
+            val normalizedWebhookUrl = normalizeWebhookUrl(state.webhookUrl)
 
-            settingsRepository.setWebhookUrl(state.webhookUrl)
+            settingsRepository.setWebhookUrl(normalizedWebhookUrl)
             settingsRepository.setSendEnabled(state.sendEnabled)
             settingsRepository.setSendTime(state.sendHour, state.sendMinute)
 
             // WorkManagerのスケジュールを更新
-            if (state.sendEnabled && state.webhookUrl.isNotBlank()) {
+            if (state.sendEnabled && normalizedWebhookUrl.isNotBlank()) {
                 workScheduler.scheduleOrUpdateDailyWorker(state.sendHour, state.sendMinute)
             } else {
                 workScheduler.cancelDailyWorker()
@@ -108,10 +106,11 @@ class SettingsViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     isSaved = true,
-                    initialWebhookUrl = it.webhookUrl,
-                    initialSendEnabled = it.sendEnabled,
-                    initialSendHour = it.sendHour,
-                    initialSendMinute = it.sendMinute
+                    webhookUrl = normalizedWebhookUrl,
+                    initialWebhookUrl = normalizedWebhookUrl,
+                    initialSendEnabled = state.sendEnabled,
+                    initialSendHour = state.sendHour,
+                    initialSendMinute = state.sendMinute
                 )
             }
         }
@@ -122,8 +121,12 @@ class SettingsViewModel @Inject constructor(
      */
     fun onClickTestWebhook() {
         viewModelScope.launch {
-            val webhookUrl = _uiState.value.webhookUrl
-            if (webhookUrl.isBlank()) {
+            val rawWebhookUrl = _uiState.value.webhookUrl
+            val normalizedWebhookUrl = normalizeWebhookUrl(rawWebhookUrl)
+            if (normalizedWebhookUrl != rawWebhookUrl) {
+                _uiState.update { it.copy(webhookUrl = normalizedWebhookUrl) }
+            }
+            if (normalizedWebhookUrl.isBlank()) {
                 _uiState.update {
                     it.copy(testResult = TestResult.Failure(context.getString(R.string.settings_webhook_not_set)))
                 }
@@ -132,7 +135,7 @@ class SettingsViewModel @Inject constructor(
 
             _uiState.update { it.copy(isTesting = true, testResult = null) }
 
-            val result = slackRepository.sendTestMessage(webhookUrl)
+            val result = slackRepository.sendTestMessage(normalizedWebhookUrl)
 
             _uiState.update {
                 it.copy(
