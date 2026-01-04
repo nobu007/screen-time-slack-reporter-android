@@ -18,8 +18,7 @@ class AppListRepository @Inject constructor(
             .map {
                 App(
                     packageName = it.packageName,
-                    appName = packageManager.getApplicationLabel(it).toString(),
-                    icon = packageManager.getApplicationIcon(it)
+                    appName = packageManager.getApplicationLabel(it).toString()
                 )
             }
         apps.sortedBy { it.appName }

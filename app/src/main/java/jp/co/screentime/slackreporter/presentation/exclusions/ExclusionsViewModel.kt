@@ -9,13 +9,17 @@ import jp.co.screentime.slackreporter.R
 import jp.co.screentime.slackreporter.data.repository.SettingsRepository
 import jp.co.screentime.slackreporter.domain.usecase.GetAllAppsUseCase
 import jp.co.screentime.slackreporter.domain.usecase.GetTodayUsedAppsUseCase
+import jp.co.screentime.slackreporter.platform.AppLabelResolver
 import jp.co.screentime.slackreporter.presentation.model.UiAppUsage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +27,8 @@ class ExclusionsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val getAllAppsUseCase: GetAllAppsUseCase,
     private val getTodayUsedAppsUseCase: GetTodayUsedAppsUseCase,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val appLabelResolver: AppLabelResolver
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExclusionsUiState())
@@ -46,19 +51,21 @@ class ExclusionsViewModel @Inject constructor(
                     settingsRepository.settingsFlow,
                     settingsRepository.showExcludedOnlyFlow
                 ) { settings, showExcludedOnly ->
-                    val apps = allApps.map { app ->
-                        val usage = usageMap[app.packageName]
-                        UiAppUsage(
-                            packageName = app.packageName,
-                            appName = app.appName,
-                            icon = app.icon,
-                            durationMinutes = usage?.durationMinutes ?: 0,
-                            isExcluded = app.packageName in settings.excludedPackages
-                        )
-                    }.sortedWith(compareByDescending<UiAppUsage> { it.durationMinutes }.thenBy { it.appName })
+                    Pair(settings, showExcludedOnly)
+                }.collectLatest { (settings, showExcludedOnly) ->
+                    val apps = withContext(Dispatchers.IO) {
+                        allApps.map { app ->
+                            val usage = usageMap[app.packageName]
+                            UiAppUsage(
+                                packageName = app.packageName,
+                                appName = app.appName,
+                                icon = appLabelResolver.getAppIcon(app.packageName),
+                                durationMinutes = usage?.durationMinutes ?: 0,
+                                isExcluded = app.packageName in settings.excludedPackages
+                            )
+                        }.sortedWith(compareByDescending<UiAppUsage> { it.durationMinutes }.thenBy { it.appName })
+                    }
 
-                    Pair(apps, showExcludedOnly)
-                }.collect { (apps, showExcludedOnly) ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
