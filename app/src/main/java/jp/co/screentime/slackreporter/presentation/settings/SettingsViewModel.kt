@@ -1,8 +1,11 @@
 package jp.co.screentime.slackreporter.presentation.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import jp.co.screentime.slackreporter.R
 import jp.co.screentime.slackreporter.data.repository.SettingsRepository
 import jp.co.screentime.slackreporter.data.repository.SlackRepository
 import jp.co.screentime.slackreporter.workers.WorkScheduler
@@ -16,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val slackRepository: SlackRepository,
     private val workScheduler: WorkScheduler
@@ -125,7 +129,7 @@ class SettingsViewModel @Inject constructor(
             val webhookUrl = _uiState.value.webhookUrl
             if (webhookUrl.isBlank()) {
                 _uiState.update {
-                    it.copy(testResult = TestResult.Failure("Webhook URLが設定されていません"))
+                    it.copy(testResult = TestResult.Failure(context.getString(R.string.settings_webhook_not_set)))
                 }
                 return@launch
             }
@@ -140,7 +144,7 @@ class SettingsViewModel @Inject constructor(
                     testResult = if (result.isSuccess) {
                         TestResult.Success
                     } else {
-                        TestResult.Failure(result.exceptionOrNull()?.message ?: "Unknown error")
+                        TestResult.Failure(result.exceptionOrNull()?.message ?: context.getString(R.string.common_unknown_error))
                     }
                 )
             }
