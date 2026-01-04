@@ -1,15 +1,20 @@
 package jp.co.screentime.slackreporter.di
 
+import android.content.Context
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-/**
- * Hiltのモジュール定義
- *
- * 現時点では@Injectでほぼ自動的にDIできるため、
- * 特別なバインディングは不要。拡張用に空のモジュールを用意。
- */
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideContext(@ApplicationContext context: Context): Context {
+        return context
+    }
+}
