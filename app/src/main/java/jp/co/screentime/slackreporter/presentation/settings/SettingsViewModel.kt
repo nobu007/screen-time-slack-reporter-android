@@ -39,17 +39,20 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            settingsRepository.settingsFlow.collect { settings ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        webhookUrl = settings.webhookUrl,
-                        webhookUrlMasked = maskWebhookUrl(settings.webhookUrl),
-                        sendEnabled = settings.sendEnabled,
-                        sendHour = settings.sendHour,
-                        sendMinute = settings.sendMinute
-                    )
-                }
+            val settings = settingsRepository.settingsFlow.first()
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    webhookUrl = settings.webhookUrl,
+                    sendEnabled = settings.sendEnabled,
+                    sendHour = settings.sendHour,
+                    sendMinute = settings.sendMinute,
+                    // 初期値も設定
+                    initialWebhookUrl = settings.webhookUrl,
+                    initialSendEnabled = settings.sendEnabled,
+                    initialSendHour = settings.sendHour,
+                    initialSendMinute = settings.sendMinute
+                )
             }
         }
     }
@@ -58,45 +61,29 @@ class SettingsViewModel @Inject constructor(
      * Webhook URLをマスクする
      */
     private fun maskWebhookUrl(url: String): String {
-        if (url.isBlank()) return ""
-        return if (url.length > 20) {
-            url.take(30) + "..." + url.takeLast(10)
-        } else {
-            url
-        }
+        if (url.length < 20) return url
+        return "${url.take(8)}...${url.takeLast(4)}"
     }
 
     /**
      * Webhook URLを更新
      */
     fun onWebhookUrlChanged(url: String) {
-        _uiState.update {
-            it.copy(
-                webhookUrl = url,
-                webhookUrlMasked = maskWebhookUrl(url),
-                isSaved = false
-            )
-        }
+        _uiState.update { it.copy(webhookUrl = url) }
     }
 
     /**
      * 送信有効/無効を切り替え
      */
     fun onSendEnabledChanged(enabled: Boolean) {
-        _uiState.update { it.copy(sendEnabled = enabled, isSaved = false) }
+        _uiState.update { it.copy(sendEnabled = enabled) }
     }
 
     /**
      * 送信時刻を更新
      */
     fun onSendTimeChanged(hour: Int, minute: Int) {
-        _uiState.update {
-            it.copy(
-                sendHour = hour,
-                sendMinute = minute,
-                isSaved = false
-            )
-        }
+        _uiState.update { it.copy(sendHour = hour, sendMinute = minute) }
     }
 
     /**
@@ -117,7 +104,16 @@ class SettingsViewModel @Inject constructor(
                 workScheduler.cancelDailyWorker()
             }
 
-            _uiState.update { it.copy(isSaved = true) }
+            // 保存が完了したので、初期値を更新
+            _uiState.update {
+                it.copy(
+                    isSaved = true,
+                    initialWebhookUrl = it.webhookUrl,
+                    initialSendEnabled = it.sendEnabled,
+                    initialSendHour = it.sendHour,
+                    initialSendMinute = it.sendMinute
+                )
+            }
         }
     }
 

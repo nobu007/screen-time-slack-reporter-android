@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
@@ -189,11 +188,7 @@ private fun SettingsContent(
                     onValueChange = onWebhookUrlChanged,
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text(stringResource(R.string.settings_webhook_url_hint)) },
-                    visualTransformation = if (showWebhookUrl) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
+                    visualTransformation = if (showWebhookUrl) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                     singleLine = true,
                     trailingIcon = {
@@ -322,7 +317,8 @@ private fun SettingsContent(
         // 保存ボタン
         Button(
             onClick = onSaveSettings,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState.hasUnsavedChanges
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
