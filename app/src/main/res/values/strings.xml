@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">ScreenTime Slack Reporter</string>
 
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">キャンセル</string>
+    <string name="common_unknown_error">Unknown error</string>
+
     <!-- Home Screen -->
     <string name="home_title">今日の利用状況</string>
     <string name="home_total_time">合計利用時間</string>
+    <string name="home_total_time_zero">0分</string>
     <string name="home_top_apps">アプリ別利用時間</string>
     <string name="home_other_apps">その他</string>
     <string name="home_send_now">今すぐ送信</string>
@@ -21,6 +27,8 @@
     <string name="settings_webhook_url">Slack Webhook URL</string>
     <string name="settings_webhook_url_hint">https://hooks.slack.com/services/...</string>
     <string name="settings_webhook_warning">⚠️ Webhook URLは秘匿情報です。漏洩すると第三者が投稿できるため取り扱いにご注意ください。</string>
+    <string name="settings_webhook_show">表示</string>
+    <string name="settings_webhook_hide">隠す</string>
     <string name="settings_send_time">送信時刻</string>
     <string name="settings_send_enabled">自動送信を有効にする</string>
     <string name="settings_open_slack_developer">Slack開発者ページを開く</string>
@@ -29,6 +37,10 @@
     <string name="settings_test_failed">テスト送信失敗: %1$s</string>
     <string name="settings_webhook_not_set">Webhook URLが設定されていません</string>
     <string name="settings_saved">設定を保存しました</string>
+    <string name="settings_save">設定を保存</string>
+    <string name="settings_time_picker_title">送信時刻を選択</string>
+    <string name="settings_time_picker_hour">時</string>
+    <string name="settings_time_picker_minute">分</string>
 
     <!-- Exclusions Screen -->
     <string name="exclusions_title">対象外アプリ</string>
@@ -36,11 +48,13 @@
     <string name="exclusions_no_excluded">まだ対象外アプリがありません</string>
     <string name="exclusions_show_all">一覧を表示</string>
     <string name="exclusions_no_usage_today">今日使ったアプリはありません</string>
+    <string name="exclusions_switch_label">対象外</string>
 
     <!-- Navigation -->
     <string name="nav_home">ホーム</string>
     <string name="nav_settings">設定</string>
     <string name="nav_exclusions">対象外</string>
+    <string name="nav_back">戻る</string>
 
     <!-- Time Format -->
     <string name="time_format_hours_minutes">%1$d時間%2$d分</string>
