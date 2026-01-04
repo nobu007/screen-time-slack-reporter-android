@@ -61,9 +61,14 @@
     <string name="nav_back">戻る</string>
 
     <!-- Time Format -->
-    <string name="time_format_hours_minutes">%1$d時間%2$d分</string>
-    <string name="time_format_minutes">%1$d分</string>
     <string name="time_format_less_than_minute">1分未満</string>
+    <string name="time_format_hours_and_minutes">%1$s %2$s</string>
+    <plurals name="hours">
+        <item quantity="other">%d時間</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="other">%d分</item>
+    </plurals>
 
     <!-- Slack Message -->
     <string name="slack_message_header">📱 *%1$s の利用状況*\n合計: *%2$s* (目標30分との差: %3$s)</string>

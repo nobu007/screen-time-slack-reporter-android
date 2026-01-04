@@ -136,18 +136,32 @@ fun HomeScreen(
 
 @Composable
 private fun formatMinutes(context: Context, minutes: Int): String {
+    if (minutes < 1) {
+        return context.getString(R.string.time_format_less_than_minute)
+    }
+
+    val hours = minutes / 60
+    val mins = minutes % 60
+
+    val hoursString = if (hours > 0) {
+        context.resources.getQuantityString(R.plurals.hours, hours, hours)
+    } else {
+        null
+    }
+
+    val minutesString = if (mins > 0) {
+        context.resources.getQuantityString(R.plurals.minutes, mins, mins)
+    } else {
+        null
+    }
+
     return when {
-        minutes < 1 -> context.getString(R.string.time_format_less_than_minute)
-        minutes < 60 -> context.getString(R.string.time_format_minutes, minutes)
-        else -> {
-            val hours = minutes / 60
-            val mins = minutes % 60
-            if (mins > 0) {
-                context.getString(R.string.time_format_hours_minutes, hours, mins)
-            } else {
-                context.getString(R.string.time_format_hours_minutes, hours, 0) // e.g., "1時間0分"
-            }
+        hoursString != null && minutesString != null -> {
+            context.getString(R.string.time_format_hours_and_minutes, hoursString, minutesString)
         }
+        hoursString != null -> hoursString
+        minutesString != null -> minutesString
+        else -> context.resources.getQuantityString(R.plurals.minutes, 0, 0)
     }
 }
 
