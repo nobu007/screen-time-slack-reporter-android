@@ -19,8 +19,8 @@
     <string name="home_last_sent_at">最終送信: %1$s</string>
     <string name="home_no_usage">本日の利用はありませんでした</string>
     <string name="home_sending">送信中…</string>
-    <string name="home_usage_access_required_title">利用状況へのアクセスが必要です</string>
-    <string name="home_usage_access_required_body">レポートを作成するために、このアプリがスマートフォンの利用状況にアクセスすることを許可してください。</string>
+    <string name="home_usage_permission_title">利用状況へのアクセスが必要です</string>
+    <string name="home_usage_permission_body">レポートを作成するために、このアプリがスマートフォンの利用状況にアクセスすることを許可してください。</string>
     <string name="home_grant_permission">設定画面へ</string>
 
     <!-- Settings Screen -->
