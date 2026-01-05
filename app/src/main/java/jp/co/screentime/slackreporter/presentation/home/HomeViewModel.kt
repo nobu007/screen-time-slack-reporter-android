@@ -1,8 +1,10 @@
 package jp.co.screentime.slackreporter.presentation.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jp.co.screentime.slackreporter.data.repository.SettingsRepository
 import jp.co.screentime.slackreporter.data.repository.UsageRepository
 import jp.co.screentime.slackreporter.domain.model.SendStatus
@@ -27,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getTodayUsageUseCase: GetTodayUsageUseCase,
     private val sendDailyReportUseCase: SendDailyReportUseCase,
     private val settingsRepository: SettingsRepository,
@@ -76,7 +79,8 @@ class HomeViewModel @Inject constructor(
                 settings.collectLatest { currentSettings ->
                     val (topApps, totalDurationMillis, otherDurationMillis) = withContext(Dispatchers.IO) {
                         val filteredUsage = usageList.filter { usage ->
-                            usage.packageName !in currentSettings.excludedPackages
+                            usage.packageName !in currentSettings.excludedPackages &&
+                                usage.packageName != context.packageName
                         }
 
                         val topApps = filteredUsage.take(TOP_APPS_COUNT).map { usage ->

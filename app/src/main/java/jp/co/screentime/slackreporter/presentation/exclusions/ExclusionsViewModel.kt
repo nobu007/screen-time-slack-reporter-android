@@ -43,7 +43,7 @@ class ExclusionsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                val allApps = getAllAppsUseCase()
+                val allApps = getAllAppsUseCase().filter { it.packageName != context.packageName }
                 val usageList = getTodayUsedAppsUseCase()
                 val usageMap = usageList.associateBy { it.packageName }
 
