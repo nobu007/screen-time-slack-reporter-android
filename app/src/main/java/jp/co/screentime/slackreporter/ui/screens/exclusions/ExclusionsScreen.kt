@@ -44,6 +44,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.runtime.compose.collectAsStateWithLifecycle
 import jp.co.screentime.slackreporter.R
+import jp.co.screentime.slackreporter.presentation.exclusions.ExclusionsUiState
 import jp.co.screentime.slackreporter.presentation.exclusions.ExclusionsViewModel
 import jp.co.screentime.slackreporter.presentation.model.UiAppUsage
 
@@ -95,7 +96,7 @@ fun ExclusionsScreen(
 
 @Composable
 private fun ExclusionsContent(
-    uiState: jp.co.screentime.slackreporter.presentation.exclusions.ExclusionsUiState,
+    uiState: ExclusionsUiState,
     onShowExcludedOnlyChanged: (Boolean) -> Unit,
     onExcludedChanged: (String, Boolean) -> Unit,
     onShowAllApps: () -> Unit
