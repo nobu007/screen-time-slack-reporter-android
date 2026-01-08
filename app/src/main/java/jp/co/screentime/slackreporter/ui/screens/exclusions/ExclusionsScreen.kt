@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.runtime.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import jp.co.screentime.slackreporter.R
 import jp.co.screentime.slackreporter.presentation.exclusions.ExclusionsUiState
 import jp.co.screentime.slackreporter.presentation.exclusions.ExclusionsViewModel
