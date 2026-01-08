@@ -1,4 +1,5 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">ScreenTime Slack Reporter</string>
 
     <!-- Common -->
@@ -16,7 +17,7 @@
     <string name="home_send_status_not_sent">未送信</string>
     <string name="home_send_status_success">送信成功</string>
     <string name="home_send_status_failed">送信失敗</string>
-    <string name="home_last_sent_at">最終送信: %1$s</string>
+    <string name="home_last_sent_at">最終送信: <xliff:g id="time">%1$s</xliff:g></string>
     <string name="home_no_usage">本日の利用はありませんでした</string>
     <string name="home_sending">送信中…</string>
     <string name="home_usage_permission_title">利用状況へのアクセスが必要です</string>
@@ -36,7 +37,7 @@
     <string name="settings_open_slack_developer">Slack開発者ページを開く</string>
     <string name="settings_test_webhook">テスト送信を実行</string>
     <string name="settings_test_success">Slackへのテスト送信に成功しました！</string>
-    <string name="settings_test_failed">テスト送信に失敗しました: %1$s</string>
+    <string name="settings_test_failed">テスト送信に失敗しました: <xliff:g id="error">%1$s</xliff:g></string>
     <string name="settings_webhook_not_set">テスト送信するには、Webhook URLを先に設定してください</string>
     <string name="settings_saved">変更を保存しました</string>
     <string name="settings_save">変更を保存</string>
@@ -56,12 +57,12 @@
 
     <!-- Time Format -->
     <string name="time_format_less_than_minute">1分未満</string>
-    <string name="time_format_hours_and_minutes">%1$s %2$s</string>
+    <string name="time_format_hours_and_minutes"><xliff:g id="hours">%1$s</xliff:g> <xliff:g id="minutes">%2$s</xliff:g></string>
     <plurals name="hours">
-        <item quantity="other">%d時間</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g>時間</item>
     </plurals>
     <plurals name="minutes">
-        <item quantity="other">%d分</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g>分</item>
     </plurals>
 
     <!-- Navigation -->
@@ -71,9 +72,9 @@
     <string name="nav_back">戻る</string>
 
     <!-- Slack Message -->
-    <string name="slack_message_header">📱 *%1$s の利用状況*\n合計: *%2$s* (目標30分との差: %3$s)</string>
-    <string name="slack_message_app_line">• %1$s - %2$s</string>
-    <string name="slack_message_other">• その他 - %1$s</string>
+    <string name="slack_message_header" translatable="false">📱 *<xliff:g id="date">%1$s</xliff:g> の利用状況*\n合計: *<xliff:g id="total">%2$s</xliff:g>* (目標30分との差: <xliff:g id="diff">%3$s</xliff:g>)</string>
+    <string name="slack_message_app_line" translatable="false">• <xliff:g id="app">%1$s</xliff:g> - <xliff:g id="duration">%2$s</xliff:g></string>
+    <string name="slack_message_other" translatable="false">• その他 - <xliff:g id="duration">%1$s</xliff:g></string>
     <string name="slack_message_no_usage">本日は利用が検出されませんでした。</string>
     <string name="slack_test_message">📱 ScreenTime Slack Reporter からのテスト送信です。</string>
 </resources>
