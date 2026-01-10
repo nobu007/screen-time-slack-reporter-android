@@ -49,7 +49,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import jp.co.screentime.slackreporter.R
 import jp.co.screentime.slackreporter.platform.DurationFormatter
@@ -139,6 +139,9 @@ private fun UsageAccessRequiredContent(
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val appName = stringResource(R.string.app_name)
+    
     Column(
         modifier = modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,7 +162,7 @@ private fun UsageAccessRequiredContent(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(R.string.home_usage_permission_body),
+            text = stringResource(R.string.home_usage_permission_body, appName),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -285,7 +288,7 @@ private fun SendStatusCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = when (status) {
                             SendStatus.NOT_SENT -> stringResource(R.string.home_send_status_not_sent)
@@ -314,6 +317,8 @@ private fun SendStatusCard(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
 
                 Button(onClick = onSendNow, enabled = !isSending) {
                     if (isSending) {

@@ -138,47 +138,73 @@ private fun ExclusionsContent(
         }
 
         // アプリ一覧 or 空状態
-        if (uiState.hasNoExcludedApps) {
-            // 対象外のみ表示がONで、対象外アプリがない場合
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.exclusions_no_excluded),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+        when {
+            uiState.hasNoExcludedApps -> {
+                // 対象外のみ表示がONで、対象外アプリがない場合
+                EmptyState(
+                    message = stringResource(R.string.exclusions_no_excluded),
+                    actionText = stringResource(R.string.exclusions_show_all),
+                    onAction = onShowAllApps
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onShowAllApps) {
-                    Text(stringResource(R.string.exclusions_show_all))
+            }
+            uiState.hasNoUsageToday && !uiState.showExcludedOnly -> {
+                // 今日利用したアプリ自体が一つもない場合
+                EmptyState(
+                    message = stringResource(R.string.exclusions_no_usage_today),
+                    actionText = null,
+                    onAction = {}
+                )
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = uiState.filteredApps,
+                        key = { it.packageName }
+                    ) { app ->
+                        AppExclusionItem(
+                            app = app,
+                            onExcludedChanged = { excluded ->
+                                onExcludedChanged(app.packageName, excluded)
+                            }
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = uiState.filteredApps,
-                    key = { it.packageName }
-                ) { app ->
-                    AppExclusionItem(
-                        app = app,
-                        onExcludedChanged = { excluded ->
-                            onExcludedChanged(app.packageName, excluded)
-                        }
-                    )
-                }
+        }
+    }
+}
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+@Composable
+private fun EmptyState(
+    message: String,
+    actionText: String?,
+    onAction: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        if (actionText != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onAction) {
+                Text(actionText)
             }
         }
     }

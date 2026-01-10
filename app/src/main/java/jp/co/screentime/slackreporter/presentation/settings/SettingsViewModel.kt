@@ -61,22 +61,31 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val settings = settingsRepository.settingsFlow.first()
-            val normalizedWebhookUrl = normalizeWebhookUrl(settings.webhookUrl)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    webhookUrl = normalizedWebhookUrl,
-                    sendEnabled = settings.sendEnabled,
-                    sendHour = settings.sendHour,
-                    sendMinute = settings.sendMinute,
-                    // 初期値も設定
-                    initialWebhookUrl = normalizedWebhookUrl,
-                    initialSendEnabled = settings.sendEnabled,
-                    initialSendHour = settings.sendHour,
-                    initialSendMinute = settings.sendMinute,
-                    webhookError = null
-                )
+            try {
+                val settings = settingsRepository.settingsFlow.first()
+                val normalizedWebhookUrl = normalizeWebhookUrl(settings.webhookUrl)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        webhookUrl = normalizedWebhookUrl,
+                        sendEnabled = settings.sendEnabled,
+                        sendHour = settings.sendHour,
+                        sendMinute = settings.sendMinute,
+                        // 初期値も設定
+                        initialWebhookUrl = normalizedWebhookUrl,
+                        initialSendEnabled = settings.sendEnabled,
+                        initialSendHour = settings.sendHour,
+                        initialSendMinute = settings.sendMinute,
+                        webhookError = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false,
+                        webhookError = context.getString(R.string.common_unknown_error)
+                    )
+                }
             }
         }
     }
@@ -129,28 +138,34 @@ class SettingsViewModel @Inject constructor(
                 return@launch
             }
 
-            settingsRepository.setWebhookUrl(normalizedWebhookUrl)
-            settingsRepository.setSendEnabled(state.sendEnabled)
-            settingsRepository.setSendTime(state.sendHour, state.sendMinute)
+            try {
+                settingsRepository.setWebhookUrl(normalizedWebhookUrl)
+                settingsRepository.setSendEnabled(state.sendEnabled)
+                settingsRepository.setSendTime(state.sendHour, state.sendMinute)
 
-            // WorkManagerのスケジュールを更新
-            if (state.sendEnabled && normalizedWebhookUrl.isNotBlank()) {
-                workScheduler.scheduleOrUpdateDailyWorker(state.sendHour, state.sendMinute)
-            } else {
-                workScheduler.cancelDailyWorker()
-            }
+                // WorkManagerのスケジュールを更新
+                if (state.sendEnabled && normalizedWebhookUrl.isNotBlank()) {
+                    workScheduler.scheduleOrUpdateDailyWorker(state.sendHour, state.sendMinute)
+                } else {
+                    workScheduler.cancelDailyWorker()
+                }
 
-            // 保存が完了したので、初期値を更新
-            _uiState.update {
-                it.copy(
-                    isSaved = true,
-                    webhookUrl = normalizedWebhookUrl,
-                    initialWebhookUrl = normalizedWebhookUrl,
-                    initialSendEnabled = state.sendEnabled,
-                    initialSendHour = state.sendHour,
-                    initialSendMinute = state.sendMinute,
-                    webhookError = null
-                )
+                // 保存が完了したので、初期値を更新
+                _uiState.update {
+                    it.copy(
+                        isSaved = true,
+                        webhookUrl = normalizedWebhookUrl,
+                        initialWebhookUrl = normalizedWebhookUrl,
+                        initialSendEnabled = state.sendEnabled,
+                        initialSendHour = state.sendHour,
+                        initialSendMinute = state.sendMinute,
+                        webhookError = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(webhookError = context.getString(R.string.common_unknown_error))
+                }
             }
         }
     }

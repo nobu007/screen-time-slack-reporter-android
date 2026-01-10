@@ -21,13 +21,13 @@
     <string name="home_no_usage">本日の利用はありませんでした</string>
     <string name="home_sending">送信中…</string>
     <string name="home_usage_permission_title">利用状況へのアクセスが必要です</string>
-    <string name="home_usage_permission_body">レポートを作成するために、このアプリがスマートフォンの利用状況にアクセスすることを許可してください。</string>
+    <string name="home_usage_permission_body">レポートを作成するために、設定画面で「<xliff:g id="app_name">%1$s</xliff:g>」を選択し、利用状況へのアクセスを許可してください。</string>
     <string name="home_grant_permission">設定画面へ</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">設定</string>
     <string name="settings_webhook_url">Slack Webhook URL</string>
-    <string name="settings_webhook_url_hint">https://hooks.slack.com/services/...</string>
+    <string name="settings_webhook_url_hint">https://hooks.slack.com/...</string>
     <string name="settings_webhook_warning">このURLを知っている人は誰でもSlackに投稿できます。取り扱いには十分ご注意ください。</string>
     <string name="settings_webhook_invalid">Slack Webhook URLが不正です</string>
     <string name="settings_webhook_show">表示</string>
