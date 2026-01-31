@@ -43,8 +43,15 @@ gaps:
     description: "検証スクリプトの実行環境依存"
     intent: "CF-001〜CF-005の自動検証"
     reality: "Android依存コード（UsageStatsManager等）は実機/エミュレータなしでは検証困難"
-    severity: "medium"
-    impact: "CIでの自動検証が難しい"
+    severity: "low"
+    status: "partially_resolved"
+    resolved_at: "2026-02-01T00:10:00Z"
+    resolution: |
+      15_executor により GitHub Actions CI/CD パイプライン構築完了。
+      - 自動ビルド・テスト・Lint・カバレッジレポート有効化
+      - ユニットテストは CI で自動実行可能に
+    remaining: "Android依存コードのInstrumented Test/Robolectric対応"
+    impact: "CIでのユニットテスト自動検証は可能に。Instrumented Testは未対応"
     recommended_action: "Robolectric導入またはInstrumented Testの拡充"
 
   - id: "GAP-005"

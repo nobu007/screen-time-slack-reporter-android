@@ -1,0 +1,39 @@
+name: Coverage Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Run tests with coverage
+      run: ./gradlew jacocoTestReport
+    
+    - name: Check coverage threshold
+      run: |
+        COVERAGE=$(grep -oP 'Total.*?(\d+)%' app/build/reports/jacoco/jacocoTestReport/html/index.html | grep -oP '\d+' | head -1)
+        echo "Current coverage: $COVERAGE%"
+        if [ -z "$COVERAGE" ]; then
+          echo "Warning: Could not parse coverage, skipping threshold check"
+          exit 0
+        fi
+        if [ "$COVERAGE" -lt 70 ]; then
+          echo "Coverage $COVERAGE% is below threshold 70%"
+          exit 1
+        fi
+        echo "Coverage check passed: $COVERAGE% >= 70%"

@@ -1,0 +1,24 @@
+run_id: "2026-02-01T00-00-00Z"
+scope:
+  prs_to_apply: ["PR-003"]
+  prs_deferred: []
+  focus: "CI/CD pipeline implementation"
+
+success_criteria:
+  - id: "SC-001"
+    from: "gap.yml#GAP-004"
+    target: "CI/CD自動化パイプライン構築"
+    verification: "GitHub Actions workflow files exist"
+  - id: "SC-002"
+    from: "intent.yml#QA-001"
+    target: "テストカバレッジ自動計測"
+    verification: "JaCoCo report in CI workflow"
+
+rollback_trigger:
+  - "ワークフローファイル構文エラー"
+  - "既存ファイル破壊"
+
+rationale: |
+  前回実行(2026-01-31T11-49-06Z)でテストカバレッジ75-85%達成。
+  次の改善として、CI/CDパイプライン構築(PR-003)を適用し、
+  品質チェックの自動化を実現する。
