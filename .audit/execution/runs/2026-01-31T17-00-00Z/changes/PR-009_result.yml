@@ -1,0 +1,15 @@
+pr_id: "PR-009"
+status: "applied"
+applied_at: "2026-01-31T17:15:00Z"
+changes:
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/presentation/home/HomeViewModelTest.kt"
+    action: "created"
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/presentation/settings/SettingsViewModelTest.kt"
+    action: "created"
+  - file: "app/src/main/java/jp/co/screentime/slackreporter/presentation/exclusions/ExclusionsViewModel.kt"
+    action: "modified"
+    description: "Injected IoDispatcher to fix concurrency issues"
+verification:
+  status: "passed"
+  method: "./gradlew test"
+  result: "All ViewModel tests passed"

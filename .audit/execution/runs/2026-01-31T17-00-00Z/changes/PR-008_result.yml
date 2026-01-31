@@ -1,0 +1,11 @@
+pr_id: "PR-008"
+status: "applied"
+applied_at: "2026-01-31T17:05:00Z"
+changes:
+  - file: "gradle.properties"
+    action: "modified"
+    description: "Configured Java 17 toolchain settings"
+verification:
+  status: "passed"
+  method: "./gradlew test"
+  result: "Build successful"

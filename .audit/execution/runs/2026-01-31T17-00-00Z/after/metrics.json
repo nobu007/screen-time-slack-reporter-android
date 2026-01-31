@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-01-31T17:30:00Z",
+  "metrics": {
+    "test_status": "passed",
+    "failed_tests": 0,
+    "total_tests": 100,
+    "coverage_instruction": 21.22,
+    "coverage_branch": 9.04,
+    "coverage_line": 27.45,
+    "core_function_pass_rate": 1.0,
+    "verification_status": "success"
+  },
+  "core_function_results": [
+    {"id": "CF-001", "passed": true},
+    {"id": "CF-002", "passed": true},
+    {"id": "CF-003", "passed": true},
+    {"id": "CF-004", "passed": true},
+    {"id": "CF-005", "passed": true}
+  ]
+}

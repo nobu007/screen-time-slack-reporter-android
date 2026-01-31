@@ -1,0 +1,16 @@
+run_id: "2026-01-31T17-00-00Z"
+scope:
+  prs_to_apply: ["PR-008", "PR-009", "PR-010"]
+  prs_deferred: ["PR-004"]
+success_criteria:
+  - id: "SC-001"
+    from: "intent.yml#quality_attributes[0]"
+    target: "test_coverage >= 70%"
+    verification: "./gradlew jacocoTestReport"
+  - id: "SC-002"
+    from: "PR-008"
+    target: "Java 24 environment compatibility"
+    verification: "./gradlew test"
+rollback_trigger:
+  - "Verification failed"
+  - "Build error"

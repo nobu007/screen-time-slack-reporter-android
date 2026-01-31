@@ -266,6 +266,7 @@ class ExclusionsViewModelTest {
         getAllAppsUseCase = getAllAppsUseCase,
         getTodayUsedAppsUseCase = getTodayUsedAppsUseCase,
         settingsRepository = settingsRepository,
-        appLabelResolver = appLabelResolver
+        appLabelResolver = appLabelResolver,
+        ioDispatcher = testDispatcher
     )
 }
