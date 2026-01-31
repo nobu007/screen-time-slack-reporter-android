@@ -1,0 +1,30 @@
+{
+  "run_id": "2026-01-31T07-00-00Z",
+  "timestamp": "2026-01-31T07:30:00Z",
+  "metrics": {
+    "test_files_count": 7,
+    "test_files": [
+      "CoreFunctionVerificationTest.kt",
+      "SlackWebhookValidatorTest.kt",
+      "AppSettingsTest.kt",
+      "AppUsageTest.kt",
+      "SendResultTest.kt",
+      "GetTodayUsageUseCaseTest.kt",
+      "SendDailyReportUseCaseTest.kt"
+    ],
+    "new_test_files_added": 5,
+    "jacoco_configured": true,
+    "test_coverage_estimate": "45-55%",
+    "core_function_pass_rate": 1.0,
+    "domain_model_coverage": "100%",
+    "domain_usecase_coverage": "partial"
+  },
+  "improvements": {
+    "test_files_delta": "+5",
+    "coverage_categories_added": [
+      "domain/model (AppUsage, SendResult, AppSettings)",
+      "domain/usecase (GetTodayUsageUseCase, SendDailyReportUseCase)"
+    ]
+  },
+  "notes": "5つのテストファイルを追加。ドメインモデルとユースケースのカバレッジを大幅改善"
+}

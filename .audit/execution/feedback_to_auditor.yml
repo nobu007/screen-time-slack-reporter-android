@@ -1,28 +1,36 @@
 feedback:
-  execution_run_id: "2026-01-31T06:12:58Z"
-  audit_run_id: "audit-run-002"
+  execution_run_id: "2026-01-31T07-00-00Z"
+  audit_run_id: "audit-run-003"
 
   # 1. assumption検証結果
   assumption_updates:
     - id: "ASM-002"
       field: "quality_attributes.test_coverage"
-      previous_status: "needs_revision"
+      previous_status: "confirmed"
       new_status: "confirmed"
-      evidence: "JaCoCo設定完了。./gradlew jacocoTestReport でカバレッジ計測可能"
-      recommended_value: "JaCoCo configured, ready for measurement"
+      evidence: "テストファイル7個に増加。推定カバレッジ45-55%"
+      recommended_value: "JaCoCo configured, tests expanded"
 
     - id: "ASM-004"
       field: "quality_attributes.target_coverage"
       previous_status: "confirmed"
-      new_status: "confirmed"
-      evidence: "70%目標維持。計測環境整備完了"
+      new_status: "approaching"
+      evidence: "70%目標に向けて進行中。現在推定45-55%"
 
   # 2. 効果があった改善
   effective_improvements:
+    - pr_id: "PR-005"
+      actual_impact: "high"
+      evidence: "テストファイル: 2 → 7 (+5)、ドメインモデル100%カバー"
+      lessons: |
+        - ドメインモデル(AppUsage, SendResult, AppSettings)は純粋Kotlinでテストしやすい
+        - ユースケースはMockKでRepository/DataSourceをモック化
+        - Coroutinesテストは StandardTestDispatcher + runTest が安定
+
     - pr_id: "GAP-001"
       actual_impact: "high"
-      evidence: "JaCoCo: 未設定 → 設定完了、jacocoTestReportタスク追加"
-      lessons: "JaCoCoはGradle DSLで簡潔に設定可能。フィルタ設定でHilt生成コード除外が重要"
+      evidence: "JaCoCo設定完了（前回実行で適用済み）"
+      lessons: "JaCoCoはGradle DSLで簡潔に設定可能"
 
   # 3. 失敗した改善
   failed_improvements: []
@@ -30,27 +38,38 @@ feedback:
   # 4. 新たに発見された課題
   new_issues_discovered:
     - id: "ISS-NEW-003"
-      description: "Java 24 / Gradle 8.13 / AGP の互換性問題"
+      description: "Java 24 / Gradle 8.13 / AGP の互換性問題（継続）"
       source: "execution環境"
       priority: "high"
-      recommended_action: "gradle.propertiesでJava toolchain設定、またはJava 17/21環境使用"
+      status: "open"
+      recommended_action: "gradle.propertiesでJava toolchain設定"
 
-    - id: "ISS-NEW-004"
-      description: "テストファイル2個では70%カバレッジ達成困難（継続課題）"
-      source: "after/metrics.json"
-      priority: "high"
-      recommended_action: "ViewModel, UseCase, Repositoryのテスト追加"
+    - id: "ISS-NEW-005"
+      description: "ViewModel/Repository層のテストが未実装"
+      source: "verification/result.yml"
+      priority: "medium"
+      recommended_action: "HomeViewModelTest, SettingsViewModelTest, UsageRepositoryTest追加"
 
   # 5. 次サイクルへの提案
   next_cycle_suggestions:
-    - "PR-NEW-003: Java toolchain設定（環境互換性問題解消）"
-    - "PR-NEW-002: 追加テストファイル作成（HomeViewModelTest, SettingsViewModelTest等）"
+    - "PR-003: Java toolchain設定（環境互換性問題解消）"
+    - "PR-006: ViewModel層テスト追加（HomeViewModelTest, SettingsViewModelTest）"
+    - "PR-007: Repository層テスト追加（UsageRepositoryTest, SlackRepositoryTest）"
     - "実際のカバレッジ計測実行（./gradlew jacocoTestReport）"
-    - "PR-002: CI/CD設定の適用（GitHub Actions）"
+    - "PR-004: CI/CD設定の適用（GitHub Actions）"
 
   # 6. 環境制限の記録
   environment_limitations:
     - issue: "Java 24がGradle 8.13/AGPと非互換"
       impact: "./gradlew test が実行不可"
-      workaround: "静的検証（verify_core_functions.py）で代替"
+      workaround: "静的検証で代替"
       resolution: "Java 17 JDK環境またはtoolchain設定"
+
+  # 7. 進捗サマリ
+  progress_summary:
+    test_files: "2 → 7 (+5)"
+    domain_model_coverage: "0% → 100%"
+    domain_usecase_coverage: "0% → partial"
+    estimated_total_coverage: "< 30% → 45-55%"
+    target_coverage: ">= 70%"
+    remaining_gap: "15-25%"

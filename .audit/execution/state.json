@@ -1,10 +1,12 @@
 {
-  "last_run_id": "2026-01-31T06:12:58Z",
-  "total_runs": 2,
-  "total_prs_applied": 4,
+  "last_run_id": "2026-01-31T07-00-00Z",
+  "total_runs": 3,
+  "total_prs_applied": 5,
   "total_prs_rolled_back": 0,
   "overall_status": "improved",
   "last_core_function_pass_rate": 1.0,
-  "last_test_files": 2,
-  "jacoco_configured": true
+  "last_test_files": 7,
+  "jacoco_configured": true,
+  "estimated_coverage": "45-55%",
+  "target_coverage": "70%"
 }

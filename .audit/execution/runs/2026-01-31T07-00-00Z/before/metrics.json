@@ -1,0 +1,16 @@
+{
+  "run_id": "2026-01-31T07-00-00Z",
+  "timestamp": "2026-01-31T07:00:00Z",
+  "metrics": {
+    "test_files_count": 2,
+    "test_files": [
+      "CoreFunctionVerificationTest.kt",
+      "SlackWebhookValidatorTest.kt"
+    ],
+    "jacoco_configured": true,
+    "test_coverage_measured": false,
+    "test_coverage_estimate": "< 30%",
+    "core_function_pass_rate": 1.0
+  },
+  "notes": "JaCoCo設定済み、テストファイル2個のみ。カバレッジ70%達成にはテスト追加が必要"
+}

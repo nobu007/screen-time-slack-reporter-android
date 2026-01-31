@@ -1,0 +1,40 @@
+pr_id: "PR-005"
+status: "applied"
+applied_at: "2026-01-31T07:30:00Z"
+
+changes:
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/domain/model/AppUsageTest.kt"
+    action: "created"
+    lines_added: 70
+    lines_removed: 0
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/domain/model/SendResultTest.kt"
+    action: "created"
+    lines_added: 82
+    lines_removed: 0
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/domain/model/AppSettingsTest.kt"
+    action: "created"
+    lines_added: 113
+    lines_removed: 0
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/domain/usecase/GetTodayUsageUseCaseTest.kt"
+    action: "created"
+    lines_added: 108
+    lines_removed: 0
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/domain/usecase/SendDailyReportUseCaseTest.kt"
+    action: "created"
+    lines_added: 160
+    lines_removed: 0
+
+intermediate_verification:
+  syntax_check: "passed"
+  imports_check: "passed"
+  build_check: "pending (requires Java 17 environment)"
+
+total_lines_added: 533
+total_files_created: 5
+
+rollback_command: |
+  git rm app/src/test/java/jp/co/screentime/slackreporter/domain/model/AppUsageTest.kt
+  git rm app/src/test/java/jp/co/screentime/slackreporter/domain/model/SendResultTest.kt
+  git rm app/src/test/java/jp/co/screentime/slackreporter/domain/model/AppSettingsTest.kt
+  git rm app/src/test/java/jp/co/screentime/slackreporter/domain/usecase/GetTodayUsageUseCaseTest.kt
+  git rm app/src/test/java/jp/co/screentime/slackreporter/domain/usecase/SendDailyReportUseCaseTest.kt

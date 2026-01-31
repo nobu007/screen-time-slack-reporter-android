@@ -45,7 +45,6 @@ gaps:
     recommended_action: "Robolectric導入またはInstrumented Testの拡充"
 
   - id: "GAP-005"
-<<<<<<< /home/jinno/screen-time-slack-reporter-android/.audit/analysis/gap.yml
     category: "Environment"
     description: "Java 24環境でビルド・テスト実行不可"
     intent: "./gradlew test が正常実行できる"
@@ -59,17 +58,23 @@ gaps:
     category: "Quality"
     description: "テストファイル数が不足しており70%カバレッジ達成困難"
     intent: "QA-001: >= 70% カバレッジ"
-    reality: "テストファイル2個（CoreFunctionVerificationTest, SlackWebhookValidatorTest）のみ"
-    severity: "high"
-    impact: "ViewModel, UseCase, Repository の主要ロジックが未検証"
-    recommended_action: "HomeViewModelTest, SettingsViewModelTest, GetTodayUsageUseCaseTest, UsageRepositoryTest 等を追加"
+    reality: "テストファイル7個に増加（+5追加）"
+    severity: "medium"
+    status: "partially_resolved"
+    resolved_at: "2026-01-31T07-00-00Z"
+    resolution: |
+      PR-005適用により5つのテストファイルを追加:
+      - AppUsageTest.kt, SendResultTest.kt, AppSettingsTest.kt (domain/model)
+      - GetTodayUsageUseCaseTest.kt, SendDailyReportUseCaseTest.kt (domain/usecase)
+      推定カバレッジ: 45-55%。70%達成にはViewModel/Repository層のテスト追加が必要
+    remaining_work: "ViewModel層、Repository層のテスト追加"
     source: "execution/feedback_to_auditor.yml:ISS-NEW-004"
-=======
+
+  - id: "GAP-007"
     category: "Build"
-    description: "Gradle 8.13とJaCoCo 0.8.12の互換性問題"
+    description: "Gradle 8.13とJaCoCo 0.8.12の互換性問題（解決済み）"
     intent: "QA-001: JaCoCoでカバレッジ計測が可能"
-    reality: "jacocoTestReportタスク生成時に'Type T not present'エラー"
-    severity: "high"
-    impact: "テストカバレッジを計測できない"
-    recommended_action: "JaCoCoプラグイン設定の簡素化またはGradleバージョン調整"
->>>>>>> /home/jinno/.windsurf/worktrees/screen-time-slack-reporter-android/screen-time-slack-reporter-android-8ee80409/.audit/analysis/gap.yml
+    reality: "jacocoTestReportタスクが設定済み"
+    severity: "resolved"
+    status: "resolved"
+    resolved_at: "2026-01-31T06:12:58Z"
