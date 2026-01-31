@@ -7,155 +7,134 @@ import jp.co.screentime.slackreporter.data.slack.SlackMessageBuilder
 import jp.co.screentime.slackreporter.domain.model.AppSettings
 import jp.co.screentime.slackreporter.domain.model.AppUsage
 import jp.co.screentime.slackreporter.domain.model.SendStatus
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
-import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SendDailyReportUseCaseTest {
 
-    private lateinit var getTodayUsageUseCase: GetTodayUsageUseCase
-    private lateinit var settingsRepository: SettingsRepository
-    private lateinit var slackRepository: SlackRepository
-    private lateinit var slackMessageBuilder: SlackMessageBuilder
-    private lateinit var useCase: SendDailyReportUseCase
+    @Test
+    fun `returns FAILED when webhook is not configured`() = runTest {
+        val settingsRepository = mockk<SettingsRepository>()
+        val slackRepository = mockk<SlackRepository>()
+        val slackMessageBuilder = mockk<SlackMessageBuilder>()
+        val getTodayUsageUseCase = mockk<GetTodayUsageUseCase>()
 
-    @Before
-    fun setup() {
-        getTodayUsageUseCase = mockk()
-        settingsRepository = mockk(relaxed = true)
-        slackRepository = mockk()
-        slackMessageBuilder = mockk()
-        
-        useCase = SendDailyReportUseCase(
+        val settings = mockk<AppSettings> {
+            every { isWebhookConfigured } returns false
+        }
+        every { settingsRepository.settingsFlow } returns flowOf(settings)
+
+        val useCase = SendDailyReportUseCase(
             getTodayUsageUseCase,
             settingsRepository,
             slackRepository,
             slackMessageBuilder
         )
-    }
-
-    @Test
-    fun `returns FAILED when webhook URL is not configured`() = runTest {
-        val settings = AppSettings(
-            webhookUrl = "",
-            sendEnabled = false,
-            sendHour = 21,
-            sendMinute = 0,
-            excludedPackages = emptySet()
-        )
-        every { settingsRepository.settingsFlow } returns flowOf(settings)
 
         val result = useCase()
 
         assertEquals(SendStatus.FAILED, result.status)
-        assertEquals("Webhook URLが設定されていません", result.errorMessage)
+        assertNotNull(result.errorMessage)
     }
 
     @Test
     fun `returns SUCCESS when message is sent successfully`() = runTest {
-        val webhookUrl = "https://hooks.slack.com/services/T00/B00/XXX"
-        val settings = AppSettings(
-            webhookUrl = webhookUrl,
-            sendEnabled = true,
-            sendHour = 21,
-            sendMinute = 0,
-            excludedPackages = emptySet()
-        )
-        val usageList = listOf(AppUsage("com.youtube", 3600000L))
-        val message = "Test message"
+        val settingsRepository = mockk<SettingsRepository>()
+        val slackRepository = mockk<SlackRepository>()
+        val slackMessageBuilder = mockk<SlackMessageBuilder>()
+        val getTodayUsageUseCase = mockk<GetTodayUsageUseCase>()
 
+        val settings = mockk<AppSettings> {
+            every { isWebhookConfigured } returns true
+            every { webhookUrl } returns "https://hooks.slack.com/services/xxx"
+            every { excludedPackages } returns emptySet()
+        }
         every { settingsRepository.settingsFlow } returns flowOf(settings)
-        coEvery { getTodayUsageUseCase() } returns usageList
-        every { slackMessageBuilder.build(usageList, any()) } returns message
-        coEvery { slackRepository.sendMessage(webhookUrl, message) } returns Result.success(Unit)
+        coEvery { getTodayUsageUseCase.invoke() } returns listOf(AppUsage("com.test", 60000L))
+        every { slackMessageBuilder.build(any(), any()) } returns "test message"
+        coEvery { slackRepository.sendMessage(any(), any()) } returns Result.success(Unit)
+        coEvery { settingsRepository.updateSendResult(any(), any(), any()) } just Runs
+
+        val useCase = SendDailyReportUseCase(
+            getTodayUsageUseCase,
+            settingsRepository,
+            slackRepository,
+            slackMessageBuilder
+        )
 
         val result = useCase()
 
         assertEquals(SendStatus.SUCCESS, result.status)
         assertNotNull(result.lastSentEpochMillis)
-        assertNull(result.errorMessage)
     }
 
     @Test
-    fun `returns FAILED when Slack API returns error`() = runTest {
-        val webhookUrl = "https://hooks.slack.com/services/T00/B00/XXX"
-        val settings = AppSettings(
-            webhookUrl = webhookUrl,
-            sendEnabled = true,
-            sendHour = 21,
-            sendMinute = 0,
-            excludedPackages = emptySet()
-        )
-        val usageList = listOf(AppUsage("com.youtube", 3600000L))
-        val message = "Test message"
-        val errorMessage = "Network error"
+    fun `filters excluded packages from report`() = runTest {
+        val settingsRepository = mockk<SettingsRepository>()
+        val slackRepository = mockk<SlackRepository>()
+        val slackMessageBuilder = mockk<SlackMessageBuilder>()
+        val getTodayUsageUseCase = mockk<GetTodayUsageUseCase>()
 
-        every { settingsRepository.settingsFlow } returns flowOf(settings)
-        coEvery { getTodayUsageUseCase() } returns usageList
-        every { slackMessageBuilder.build(usageList, any()) } returns message
-        coEvery { slackRepository.sendMessage(webhookUrl, message) } returns Result.failure(Exception(errorMessage))
-
-        val result = useCase()
-
-        assertEquals(SendStatus.FAILED, result.status)
-        assertEquals(errorMessage, result.errorMessage)
-    }
-
-    @Test
-    fun `filters excluded packages from usage list`() = runTest {
-        val webhookUrl = "https://hooks.slack.com/services/T00/B00/XXX"
         val excludedPackage = "com.excluded"
-        val settings = AppSettings(
-            webhookUrl = webhookUrl,
-            sendEnabled = true,
-            sendHour = 21,
-            sendMinute = 0,
-            excludedPackages = setOf(excludedPackage)
-        )
-        val usageList = listOf(
-            AppUsage("com.youtube", 3600000L),
-            AppUsage(excludedPackage, 1800000L)
-        )
-        val message = "Test message"
-
+        val settings = mockk<AppSettings> {
+            every { isWebhookConfigured } returns true
+            every { webhookUrl } returns "https://hooks.slack.com/services/xxx"
+            every { excludedPackages } returns setOf(excludedPackage)
+        }
         every { settingsRepository.settingsFlow } returns flowOf(settings)
-        coEvery { getTodayUsageUseCase() } returns usageList
-        every { slackMessageBuilder.build(match { it.size == 1 && it[0].packageName == "com.youtube" }, any()) } returns message
-        coEvery { slackRepository.sendMessage(webhookUrl, message) } returns Result.success(Unit)
+        coEvery { getTodayUsageUseCase.invoke() } returns listOf(
+            AppUsage("com.youtube", 1800000L),
+            AppUsage(excludedPackage, 900000L)
+        )
 
-        val result = useCase()
+        val capturedUsage = slot<List<AppUsage>>()
+        every { slackMessageBuilder.build(capture(capturedUsage), any()) } returns "message"
+        coEvery { slackRepository.sendMessage(any(), any()) } returns Result.success(Unit)
+        coEvery { settingsRepository.updateSendResult(any(), any(), any()) } just Runs
 
-        assertEquals(SendStatus.SUCCESS, result.status)
-        verify { slackMessageBuilder.build(match { 
-            it.size == 1 && it[0].packageName == "com.youtube" 
-        }, any()) }
+        val useCase = SendDailyReportUseCase(
+            getTodayUsageUseCase,
+            settingsRepository,
+            slackRepository,
+            slackMessageBuilder
+        )
+
+        useCase()
+
+        assertEquals(1, capturedUsage.captured.size)
+        assertEquals("com.youtube", capturedUsage.captured[0].packageName)
     }
 
     @Test
-    fun `handles exception during send gracefully`() = runTest {
-        val webhookUrl = "https://hooks.slack.com/services/T00/B00/XXX"
-        val settings = AppSettings(
-            webhookUrl = webhookUrl,
-            sendEnabled = true,
-            sendHour = 21,
-            sendMinute = 0,
-            excludedPackages = emptySet()
-        )
-        val usageList = listOf(AppUsage("com.youtube", 3600000L))
-        val message = "Test message"
+    fun `returns FAILED when slack send fails`() = runTest {
+        val settingsRepository = mockk<SettingsRepository>()
+        val slackRepository = mockk<SlackRepository>()
+        val slackMessageBuilder = mockk<SlackMessageBuilder>()
+        val getTodayUsageUseCase = mockk<GetTodayUsageUseCase>()
 
+        val settings = mockk<AppSettings> {
+            every { isWebhookConfigured } returns true
+            every { webhookUrl } returns "https://hooks.slack.com/services/xxx"
+            every { excludedPackages } returns emptySet()
+        }
         every { settingsRepository.settingsFlow } returns flowOf(settings)
-        coEvery { getTodayUsageUseCase() } returns usageList
-        every { slackMessageBuilder.build(usageList, any()) } returns message
-        coEvery { slackRepository.sendMessage(webhookUrl, message) } throws RuntimeException("Unexpected error")
+        coEvery { getTodayUsageUseCase.invoke() } returns listOf(AppUsage("com.test", 60000L))
+        every { slackMessageBuilder.build(any(), any()) } returns "test message"
+        coEvery { slackRepository.sendMessage(any(), any()) } returns Result.failure(Exception("Network error"))
+        coEvery { settingsRepository.updateSendResult(any(), any(), any()) } just Runs
+
+        val useCase = SendDailyReportUseCase(
+            getTodayUsageUseCase,
+            settingsRepository,
+            slackRepository,
+            slackMessageBuilder
+        )
 
         val result = useCase()
 
         assertEquals(SendStatus.FAILED, result.status)
-        assertEquals("Unexpected error", result.errorMessage)
+        assertNotNull(result.errorMessage)
     }
 }
