@@ -5,6 +5,10 @@
 {"id":"C-005","type":"fact","timestamp":"2025-01-31T12:00:00Z","run_id":"audit-run-001","claim":"UsageStatsManagerでアプリ利用時間を取得","confidence":1.0,"source":"data/usage/UsageStatsDataSource.kt:30-48"}
 {"id":"C-006","type":"fact","timestamp":"2025-01-31T12:00:00Z","run_id":"audit-run-001","claim":"OkHttpでSlack Webhook APIを呼び出し","confidence":1.0,"source":"data/slack/SlackWebhookClient.kt:35-65"}
 {"id":"C-007","type":"fact","timestamp":"2025-01-31T14:00:00Z","run_id":"audit-run-002","claim":"テストコード2ファイル存在（CoreFunctionVerificationTest.kt, SlackWebhookValidatorTest.kt）","confidence":1.0,"source":"app/src/test/java/jp/co/screentime/slackreporter/","previous_claim":"テストコードが存在しない","correction_reason":"ディレクトリ再スキャンで発見"}
+{"id":"C-015","type":"fact","timestamp":"2026-01-31T06:12:58Z","run_id":"audit-run-003","claim":"JaCoCo設定完了、カバレッジ計測可能","confidence":1.0,"source":"app/build.gradle.kts:7-94, execution/feedback_to_auditor.yml:ASM-002"}
+{"id":"C-016","type":"fact","timestamp":"2026-01-31T06:12:58Z","run_id":"audit-run-003","claim":"Java 24環境でGradle 8.13/AGPとの互換性問題あり","confidence":1.0,"source":"execution/feedback_to_auditor.yml:ISS-NEW-003"}
+{"id":"C-017","type":"inference","timestamp":"2026-01-31T06:12:58Z","run_id":"audit-run-003","claim":"テストファイル2個では70%カバレッジ達成困難","confidence":0.9,"source":"execution/feedback_to_auditor.yml:ISS-NEW-004","reasoning":"ViewModel, UseCase, Repositoryのテストが不足"}
+{"id":"C-018","type":"fact","timestamp":"2026-01-31T06:12:58Z","run_id":"audit-run-003","claim":"CoreFunctionVerificationTest.ktで5つのCore Functionを検証","confidence":1.0,"source":"app/src/test/java/jp/co/screentime/slackreporter/CoreFunctionVerificationTest.kt:34-187"}
 {"id":"C-008","type":"fact","timestamp":"2025-01-31T12:00:00Z","run_id":"audit-run-001","claim":"ソースコード22ファイル","confidence":1.0,"source":"find *.kt 結果"}
 {"id":"C-009","type":"fact","timestamp":"2025-01-31T12:00:00Z","run_id":"audit-run-001","claim":"Webhook URL検証機能あり","confidence":1.0,"source":"data/slack/SlackWebhookValidator.kt"}
 {"id":"C-010","type":"fact","timestamp":"2025-01-31T12:00:00Z","run_id":"audit-run-001","claim":"除外アプリ設定機能あり","confidence":1.0,"source":"SendDailyReportUseCase.kt:37-40"}

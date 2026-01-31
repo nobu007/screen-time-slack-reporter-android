@@ -1,6 +1,7 @@
-version: "1.0"
-run_id: "audit-run-002"
-timestamp: "2026-01-31T04:30:00Z"
+version: "1.1"
+run_id: "audit-run-003"
+timestamp: "2026-01-31T06:15:00Z"
+previous_run: "audit-run-002"
 
 # === ギャップ分析 ===
 gaps:
@@ -12,6 +13,9 @@ gaps:
     severity: "high"
     impact: "品質の定量評価ができない"
     recommended_action: "JaCoCoプラグインを追加し、レポート生成タスクを有効化する"
+    status: "resolved"
+    resolved_at: "2026-01-31T06:12:58Z"
+    resolution: "15_executor により JaCoCo 設定完了。./gradlew jacocoTestReport で計測可能"
 
   - id: "GAP-002"
     category: "Quality"
@@ -39,3 +43,33 @@ gaps:
     severity: "medium"
     impact: "CIでの自動検証が難しい"
     recommended_action: "Robolectric導入またはInstrumented Testの拡充"
+
+  - id: "GAP-005"
+<<<<<<< /home/jinno/screen-time-slack-reporter-android/.audit/analysis/gap.yml
+    category: "Environment"
+    description: "Java 24環境でビルド・テスト実行不可"
+    intent: "./gradlew test が正常実行できる"
+    reality: "Java 24 と Gradle 8.13/AGP の互換性問題により実行不可"
+    severity: "high"
+    impact: "開発環境でテスト実行できない、CI/CDでも同様の問題が発生する可能性"
+    recommended_action: "gradle.properties で Java toolchain を 17 に設定、または Java 17 JDK 環境を使用"
+    source: "execution/feedback_to_auditor.yml:ISS-NEW-003"
+
+  - id: "GAP-006"
+    category: "Quality"
+    description: "テストファイル数が不足しており70%カバレッジ達成困難"
+    intent: "QA-001: >= 70% カバレッジ"
+    reality: "テストファイル2個（CoreFunctionVerificationTest, SlackWebhookValidatorTest）のみ"
+    severity: "high"
+    impact: "ViewModel, UseCase, Repository の主要ロジックが未検証"
+    recommended_action: "HomeViewModelTest, SettingsViewModelTest, GetTodayUsageUseCaseTest, UsageRepositoryTest 等を追加"
+    source: "execution/feedback_to_auditor.yml:ISS-NEW-004"
+=======
+    category: "Build"
+    description: "Gradle 8.13とJaCoCo 0.8.12の互換性問題"
+    intent: "QA-001: JaCoCoでカバレッジ計測が可能"
+    reality: "jacocoTestReportタスク生成時に'Type T not present'エラー"
+    severity: "high"
+    impact: "テストカバレッジを計測できない"
+    recommended_action: "JaCoCoプラグイン設定の簡素化またはGradleバージョン調整"
+>>>>>>> /home/jinno/.windsurf/worktrees/screen-time-slack-reporter-android/screen-time-slack-reporter-android-8ee80409/.audit/analysis/gap.yml

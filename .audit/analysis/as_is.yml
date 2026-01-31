@@ -1,6 +1,6 @@
-version: "1.0"
-updated_at: "2025-01-31T12:00:00Z"
-run_id: "audit-run-001"
+version: "1.1"
+updated_at: "2026-01-31T06:15:00Z"
+run_id: "audit-run-003"
 
 # === 現状サマリ ===
 summary:
@@ -110,7 +110,9 @@ quality_metrics:
     unit: "部分的（2ファイル: CoreFunctionVerificationTest.kt, SlackWebhookValidatorTest.kt）"
     integration: "0%"
     ui: "0%"
-    total: "未計測（JaCoCo未設定）"
+    total: "計測可能（JaCoCo設定完了、実測値未取得）"
+    jacoco_configured: true
+    jacoco_command: "./gradlew jacocoTestReport"
   
   static_analysis:
     lint_errors: "未実行"
@@ -189,9 +191,11 @@ issues:
     severity: "high"
     category: "quality"
     title: "テストカバレッジが不十分"
-    description: "ユニットテスト2ファイル存在するが、カバレッジ計測環境（JaCoCo）未設定"
+    description: "ユニットテスト2ファイル存在、JaCoCo設定完了したが実測値は70%未満と推定"
     impact: "リグレッションリスク、リファクタリング困難"
-    recommendation: "テスト追加を最優先で実施"
+    recommendation: "ViewModel, UseCase, Repository のテスト追加を最優先で実施"
+    status: "partially_resolved"
+    note: "JaCoCo設定は完了、テスト追加が次ステップ"
   
   - id: "ISS-002"
     severity: "medium"
@@ -216,3 +220,12 @@ issues:
     description: "GitHub Actionsなどの自動化なし"
     impact: "手動でのビルド・テスト確認が必要"
     recommendation: "GitHub Actionsでビルド・Lint自動化"
+
+  - id: "ISS-005"
+    severity: "high"
+    category: "environment"
+    title: "Java 24互換性問題"
+    description: "Java 24環境でGradle 8.13/AGPとの互換性問題により ./gradlew test 実行不可"
+    impact: "開発環境でテスト実行不可、CI/CDでも問題発生の可能性"
+    recommendation: "gradle.properties で Java toolchain を 17 に設定"
+    source: "execution/feedback_to_auditor.yml:ISS-NEW-003"
