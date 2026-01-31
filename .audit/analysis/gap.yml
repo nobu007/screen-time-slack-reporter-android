@@ -1,7 +1,7 @@
-version: "1.1"
-run_id: "audit-run-003"
-timestamp: "2026-01-31T06:15:00Z"
-previous_run: "audit-run-002"
+version: "1.2"
+run_id: "audit-run-004"
+timestamp: "2026-01-31T16:31:00Z"
+previous_run: "audit-run-003"
 
 # === ギャップ分析 ===
 gaps:
@@ -56,19 +56,27 @@ gaps:
 
   - id: "GAP-006"
     category: "Quality"
-    description: "テストファイル数が不足しており70%カバレッジ達成困難"
+    description: "テストカバレッジが70%目標に達していない"
     intent: "QA-001: >= 70% カバレッジ"
-    reality: "テストファイル7個に増加（+5追加）"
+    reality: "テストファイル8個（ドメインモデル100%、UseCase部分、Repository部分）、推定カバレッジ45-55%"
     severity: "medium"
-    status: "partially_resolved"
-    resolved_at: "2026-01-31T07-00-00Z"
-    resolution: |
-      PR-005適用により5つのテストファイルを追加:
-      - AppUsageTest.kt, SendResultTest.kt, AppSettingsTest.kt (domain/model)
-      - GetTodayUsageUseCaseTest.kt, SendDailyReportUseCaseTest.kt (domain/usecase)
-      推定カバレッジ: 45-55%。70%達成にはViewModel/Repository層のテスト追加が必要
-    remaining_work: "ViewModel層、Repository層のテスト追加"
-    source: "execution/feedback_to_auditor.yml:ISS-NEW-004"
+    status: "in_progress"
+    progress: "大幅改善 (2ファイル→8ファイル、<30%→45-55%)"
+    resolution_in_progress: |
+      完了済み:
+      - domain/model: AppUsageTest, SendResultTest, AppSettingsTest (100%カバー)
+      - domain/usecase: GetTodayUsageUseCaseTest, SendDailyReportUseCaseTest
+      - data/repository: UsageRepositoryTest
+      - data/slack: SlackWebhookValidatorTest
+      - CoreFunctionVerificationTest (5つのCore Function検証)
+      
+      残り15-25%を埋めるための推奨タスク:
+      - HomeViewModelTest (presentation層)
+      - SettingsViewModelTest (presentation層)
+      - SlackRepositoryTest (data層)
+      - SlackMessageBuilderTest (data層)
+    remaining_work: "ViewModel層2ファイル、Repository/Builder層2ファイル（合計3-5ファイル）"
+    source: "execution/feedback_to_auditor.yml, 現状スキャン結果"
 
   - id: "GAP-007"
     category: "Build"

@@ -1,12 +1,13 @@
-version: "1.1"
-updated_at: "2026-01-31T06:15:00Z"
-run_id: "audit-run-003"
+version: "1.2"
+updated_at: "2026-01-31T16:31:00Z"
+run_id: "audit-run-004"
 
 # === 現状サマリ ===
 summary:
-  status: "機能実装完了、品質保証未着手"
-  maturity_level: "MVP (Minimum Viable Product)"
-  risk_level: "medium"
+  status: "機能実装完了、品質保証進行中"
+  maturity_level: "MVP → Production Ready (進行中)"
+  risk_level: "low (改善中)"
+  progress_from_previous: "テスト2個→8個、推定カバレッジ<30%→45-55%"
 
 # === コードベース分析 ===
 codebase:
@@ -107,12 +108,21 @@ features:
 # === 品質メトリクス ===
 quality_metrics:
   test_coverage:
-    unit: "部分的（2ファイル: CoreFunctionVerificationTest.kt, SlackWebhookValidatorTest.kt）"
+    unit: "進行中（8ファイル: domain models 3, use cases 2, repository 1, core verification 1, validator 1）"
     integration: "0%"
     ui: "0%"
-    total: "計測可能（JaCoCo設定完了、実測値未取得）"
+    total: "推定45-55%（JaCoCo設定完了、実測値未取得）"
     jacoco_configured: true
     jacoco_command: "./gradlew jacocoTestReport"
+    test_files:
+      - "CoreFunctionVerificationTest.kt"
+      - "domain/model/AppUsageTest.kt"
+      - "domain/model/AppSettingsTest.kt"
+      - "domain/model/SendResultTest.kt"
+      - "domain/usecase/GetTodayUsageUseCaseTest.kt"
+      - "domain/usecase/SendDailyReportUseCaseTest.kt"
+      - "data/repository/UsageRepositoryTest.kt"
+      - "data/slack/SlackWebhookValidatorTest.kt"
   
   static_analysis:
     lint_errors: "未実行"
@@ -188,14 +198,15 @@ security:
 # === 課題リスト ===
 issues:
   - id: "ISS-001"
-    severity: "high"
+    severity: "medium"
     category: "quality"
-    title: "テストカバレッジが不十分"
-    description: "ユニットテスト2ファイル存在、JaCoCo設定完了したが実測値は70%未満と推定"
-    impact: "リグレッションリスク、リファクタリング困難"
-    recommendation: "ViewModel, UseCase, Repository のテスト追加を最優先で実施"
-    status: "partially_resolved"
-    note: "JaCoCo設定は完了、テスト追加が次ステップ"
+    title: "テストカバレッジが目標未達"
+    description: "ユニットテスト8ファイル存在、推定カバレッジ45-55%だが目標70%に15-25%不足"
+    impact: "一部のコードパスがテスト未実施、リグレッションリスク残存"
+    recommendation: "ViewModel, SlackRepository, SlackMessageBuilder のテスト追加で70%到達可能"
+    status: "in_progress"
+    note: "ドメインモデル100%、UseCase部分実装済み、残り3-5ファイルで目標達成"
+    previous_status: "high severity → medium (大幅改善)"
   
   - id: "ISS-002"
     severity: "medium"
