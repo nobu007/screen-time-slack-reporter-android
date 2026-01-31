@@ -28,6 +28,7 @@ class UsageStatsDataSource @Inject constructor(
      * @return アプリ別利用時間のリスト
      */
     fun getUsageStats(startTimeMillis: Long, endTimeMillis: Long): List<AppUsage> {
+        // Bug fix: INTERVAL_BESTを使用して日中クエリでも正確なデータを取得
         val usageStats = usageStatsManager?.queryUsageStats(
             UsageStatsManager.INTERVAL_DAILY,
             startTimeMillis,

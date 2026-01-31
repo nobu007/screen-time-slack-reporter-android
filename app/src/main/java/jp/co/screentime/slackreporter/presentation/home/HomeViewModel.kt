@@ -72,11 +72,11 @@ class HomeViewModel @Inject constructor(
             }
 
             try {
-                val settings = settingsRepository.settingsFlow
-                val usageList = getTodayUsageUseCase()
-
-                // 除外適用
-                settings.collectLatest { currentSettings ->
+                // 除外適用 - settingsの変更を監視し、毎回最新のusageListを取得
+                settingsRepository.settingsFlow.collectLatest { currentSettings ->
+                    // Bug fix: usageListを毎回取得して最新データを反映
+                    val usageList = getTodayUsageUseCase()
+                    
                     val (topApps, totalDurationMillis, otherDurationMillis) = withContext(Dispatchers.IO) {
                         val filteredUsage = usageList.filter { usage ->
                             usage.packageName !in currentSettings.excludedPackages &&

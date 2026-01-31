@@ -1,5 +1,7 @@
 package jp.co.screentime.slackreporter.presentation.settings
 
+import java.util.Locale
+
 /**
  * 設定画面のUI状態
  */
@@ -30,7 +32,7 @@ data class SettingsUiState(
      * フォーマットされた送信時刻
      */
     val formattedSendTime: String
-        get() = String.format("%02d:%02d", sendHour, sendMinute)
+        get() = String.format(Locale.getDefault(), "%02d:%02d", sendHour, sendMinute)
 
     /**
      * 未保存の変更があるか

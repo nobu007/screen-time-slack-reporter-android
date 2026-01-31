@@ -84,8 +84,15 @@ class PreferencesDataStore @Inject constructor(
 
     /**
      * 送信時刻を保存
+     *
+     * @param hour 時（0-23）
+     * @param minute 分（0-59）
+     * @throws IllegalArgumentException 無効な時刻の場合
      */
     suspend fun setSendTime(hour: Int, minute: Int) {
+        require(hour in 0..23) { "Hour must be between 0 and 23, got $hour" }
+        require(minute in 0..59) { "Minute must be between 0 and 59, got $minute" }
+        
         dataStore.edit { prefs ->
             prefs[PreferencesKeys.SEND_HOUR] = hour
             prefs[PreferencesKeys.SEND_MINUTE] = minute

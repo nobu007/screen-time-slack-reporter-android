@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,14 +14,9 @@ import javax.inject.Singleton
  * Slack Incoming Webhookクライアント
  */
 @Singleton
-class SlackWebhookClient @Inject constructor() {
-
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
-
+class SlackWebhookClient @Inject constructor(
+    private val client: OkHttpClient
+) {
     private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 
     /**

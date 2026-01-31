@@ -16,9 +16,24 @@ class AppLabelResolver @Inject constructor(
 ) {
     private val packageManager: PackageManager = context.packageManager
 
+<<<<<<< /home/jinno/screen-time-slack-reporter-android/app/src/main/java/jp/co/screentime/slackreporter/platform/AppLabelResolver.kt
     // キャッシュ
     private val labelCache = mutableMapOf<String, String>()
     private val iconCache = mutableMapOf<String, Drawable?>()
+=======
+    companion object {
+        private const val LABEL_CACHE_SIZE = 100
+        // アイコンキャッシュの最大サイズ（メモリリーク防止）
+        private const val ICON_CACHE_MAX_SIZE = 50
+    }
+
+    // キャッシュ
+    private val labelCache = mutableMapOf<String, String>()
+    // アイコンキャッシュ（LruCacheでメモリ使用量を制限）
+    private val iconCache = object : LruCache<String, Drawable?>(ICON_CACHE_MAX_SIZE) {
+        override fun sizeOf(key: String, value: Drawable?): Int = 1
+    }
+>>>>>>> /home/jinno/.windsurf/worktrees/screen-time-slack-reporter-android/screen-time-slack-reporter-android-5f9c6494/app/src/main/java/jp/co/screentime/slackreporter/platform/AppLabelResolver.kt
 
     /**
      * パッケージ名からアプリ名（ラベル）を取得
@@ -46,14 +61,20 @@ class AppLabelResolver @Inject constructor(
      */
     @Synchronized
     fun getAppIcon(packageName: String): Drawable? {
-        return iconCache.getOrPut(packageName) {
-            try {
-                val appInfo = packageManager.getApplicationInfo(packageName, 0)
-                packageManager.getApplicationIcon(appInfo)
-            } catch (e: PackageManager.NameNotFoundException) {
-                null
-            }
+        val cached = iconCache.get(packageName)
+        if (cached != null) {
+            return cached
         }
+        
+        val icon = try {
+            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            packageManager.getApplicationIcon(appInfo)
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
+        }
+        
+        iconCache.put(packageName, icon)
+        return icon
     }
 
     /**
@@ -62,6 +83,6 @@ class AppLabelResolver @Inject constructor(
     @Synchronized
     fun clearCache() {
         labelCache.clear()
-        iconCache.clear()
+        iconCache.evictAll()
     }
 }
