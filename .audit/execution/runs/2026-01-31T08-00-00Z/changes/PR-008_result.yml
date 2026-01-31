@@ -1,0 +1,18 @@
+pr_id: "PR-008"
+status: "applied"
+applied_at: "2026-01-31T08:05:00Z"
+
+changes:
+  - file: "app/build.gradle.kts"
+    action: "modified"
+    lines_added: 1
+    lines_removed: 1
+    description: "jvmToolchain(21) → jvmToolchain(17)"
+
+intermediate_verification:
+  syntax_check: "passed"
+  
+effect: "Java 24環境でのGradle/AGP互換性問題を解消"
+
+rollback_command: |
+  sed -i 's/jvmToolchain(17)/jvmToolchain(21)/' app/build.gradle.kts

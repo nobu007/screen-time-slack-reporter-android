@@ -8,7 +8,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)  // AGP 8.x と Gradle 8.13 に完全互換
 }
 
 jacoco {

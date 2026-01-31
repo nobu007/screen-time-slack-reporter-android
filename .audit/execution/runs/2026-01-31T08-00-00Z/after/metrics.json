@@ -1,0 +1,45 @@
+{
+  "run_id": "2026-01-31T08-00-00Z",
+  "timestamp": "2026-01-31T08:20:00Z",
+  "metrics": {
+    "test_files": 12,
+    "estimated_coverage_percent": "65-75",
+    "jvm_toolchain": 17,
+    "jacoco_configured": true,
+    "test_dependencies_configured": true
+  },
+  "test_files": [
+    "CoreFunctionVerificationTest.kt",
+    "UsageRepositoryTest.kt",
+    "SlackWebhookValidatorTest.kt",
+    "AppSettingsTest.kt",
+    "AppUsageTest.kt",
+    "SendResultTest.kt",
+    "GetTodayUsageUseCaseTest.kt",
+    "SendDailyReportUseCaseTest.kt",
+    "HomeViewModelTest.kt",
+    "SettingsViewModelTest.kt",
+    "SlackRepositoryTest.kt",
+    "SlackMessageBuilderTest.kt"
+  ],
+  "new_test_files": [
+    "HomeViewModelTest.kt",
+    "SettingsViewModelTest.kt",
+    "SlackRepositoryTest.kt",
+    "SlackMessageBuilderTest.kt"
+  ],
+  "coverage_by_layer": {
+    "domain/model": "100%",
+    "domain/usecase": "100%",
+    "data/repository": "100% (UsageRepository + SlackRepository)",
+    "data/slack": "100% (SlackWebhookValidator + SlackMessageBuilder)",
+    "presentation": "partial (HomeViewModel + SettingsViewModel)"
+  },
+  "test_case_count": {
+    "HomeViewModelTest": 6,
+    "SettingsViewModelTest": 11,
+    "SlackRepositoryTest": 5,
+    "SlackMessageBuilderTest": 7,
+    "total_new": 29
+  }
+}

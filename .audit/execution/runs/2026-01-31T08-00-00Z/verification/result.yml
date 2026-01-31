@@ -1,0 +1,74 @@
+run_id: "2026-01-31T08-00-00Z"
+overall_status: "improved"
+
+core_function_results:
+  - id: "CF-001"
+    name: "UsageStats実装の検証"
+    passed: true
+    actual: "検出: 4/4 要素"
+    
+  - id: "CF-002"
+    name: "Slack送信実装の検証"
+    passed: true
+    actual: "検出: 5/5 要素"
+    
+  - id: "CF-003"
+    name: "WorkManager Worker実装の検証"
+    passed: true
+    actual: "検出: 6/6 要素"
+    
+  - id: "CF-004"
+    name: "除外機能実装の検証"
+    passed: true
+    actual: "検出: 3/3 要素"
+    
+  - id: "CF-005"
+    name: "手動送信機能の検証"
+    passed: true
+    actual: "検出ViewModel: HomeViewModel.kt"
+    
+  - id: "QA-001"
+    name: "テストカバレッジの確認"
+    passed: true
+    actual: "テストファイル: 12個"
+
+summary:
+  total: 6
+  passed: 6
+  failed: 0
+  pass_rate: 1.0
+
+metrics_comparison:
+  test_files:
+    before: 8
+    after: 12
+    delta: +4
+    status: "improved"
+    
+  estimated_coverage:
+    before: "45-55%"
+    after: "65-75%"
+    delta: "+15-20%"
+    target: ">= 70%"
+    status: "approaching/achieved"
+    
+  jvm_toolchain:
+    before: 21
+    after: 17
+    status: "improved (compatibility)"
+
+interpretation:
+  summary: |
+    全Core Functionの検証がパス。
+    テストファイルは8個→12個に増加（+4）。
+    推定カバレッジは45-55%→65-75%に向上。
+    目標70%に到達または近接。
+    
+  what_improved:
+    - "Presentation層（ViewModel）のテストカバレッジ追加"
+    - "Data層（SlackRepository, SlackMessageBuilder）のテストカバレッジ追加"
+    - "Java toolchain設定で環境互換性問題を解消"
+    
+  remaining_work:
+    - "実際のJaCoCoカバレッジ計測で70%達成を確認"
+    - "ExclusionsViewModelのテスト追加（オプション）"

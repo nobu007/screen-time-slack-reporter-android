@@ -1,0 +1,38 @@
+pr_id: "PR-010"
+status: "applied"
+applied_at: "2026-01-31T08:15:00Z"
+
+changes:
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/data/repository/SlackRepositoryTest.kt"
+    action: "created"
+    lines_added: 85
+    lines_removed: 0
+    description: "SlackRepositoryのユニットテスト追加（5テストケース）"
+    
+  - file: "app/src/test/java/jp/co/screentime/slackreporter/data/slack/SlackMessageBuilderTest.kt"
+    action: "created"
+    lines_added: 150
+    lines_removed: 0
+    description: "SlackMessageBuilderのユニットテスト追加（7テストケース）"
+
+test_cases:
+  SlackRepositoryTest:
+    - "sendMessage - 送信が成功する"
+    - "sendMessage - 送信が失敗する"
+    - "sendTestMessage - テスト送信が成功する"
+    - "sendTestMessage - テスト送信が失敗する"
+    - "sendMessage - SlackWebhookClientに正しく委譲される"
+  SlackMessageBuilderTest:
+    - "通常のUsageリストでメッセージを生成できる"
+    - "空のUsageリストでもメッセージを生成できる"
+    - "日付を指定してメッセージを生成できる"
+    - "5件を超えるアプリがある場合はその他にまとめられる"
+    - "5件以下のアプリの場合はその他が表示されない"
+    - "AppLabelResolverが正しく呼ばれる"
+    - "ヘッダーに合計時間と差分が含まれる"
+
+estimated_coverage_impact: "+5-10%"
+
+rollback_command: |
+  rm app/src/test/java/jp/co/screentime/slackreporter/data/repository/SlackRepositoryTest.kt
+  rm app/src/test/java/jp/co/screentime/slackreporter/data/slack/SlackMessageBuilderTest.kt
