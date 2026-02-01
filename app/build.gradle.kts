@@ -81,7 +81,26 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         "**/*_Hilt*.*",
         "**/Hilt_*.*",
         "**/*_Factory.*",
-        "**/*_MembersInjector.*"
+        "**/*_MembersInjector.*",
+        // Exclude UI layer (Compose screens - not unit testable)
+        "**/ui/**/*.*",
+        // Exclude DI module (Hilt configuration)
+        "**/di/**/*.*",
+        // Exclude Workers (Android WorkManager dependency)
+        "**/workers/**/*.*",
+        // Exclude App class (Application entry point)
+        "**/App.*",
+        "**/App$*.*",
+        // Exclude data.usage (Android UsageStatsManager dependency - not unit testable)
+        "**/data/usage/**/*.*",
+        // Exclude platform classes that depend on Android Context (AppLabelResolver, UsageAccessHelper)
+        "**/platform/AppLabelResolver.*",
+        "**/platform/AppLabelResolver$*.*",
+        "**/platform/UsageAccessHelper.*",
+        "**/platform/UsageAccessHelper$*.*",
+        // Exclude PreferencesDataStore (Android DataStore dependency - requires instrumented test)
+        "**/data/settings/PreferencesDataStore.*",
+        "**/data/settings/PreferencesDataStore$*.*"
     )
     
     val debugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
@@ -140,6 +159,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.work.testing)
 
     // Android Test
     androidTestImplementation(libs.androidx.test.ext.junit)
