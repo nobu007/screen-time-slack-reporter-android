@@ -2,6 +2,7 @@ package jp.co.screentime.slackreporter.data.repository
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -39,17 +40,11 @@ class AppListRepositoryTest {
     @Test
     fun `getAllApps filters out system apps`() = runBlocking {
         // Add a system app
-        val systemApp = ApplicationInfo().apply {
-            packageName = "com.android.system"
-            flags = ApplicationInfo.FLAG_SYSTEM
-        }
+        val systemApp = createPackageInfo("com.android.system", "System", ApplicationInfo.FLAG_SYSTEM)
         shadowPackageManager.installPackage(systemApp)
 
         // Add a user app
-        val userApp = ApplicationInfo().apply {
-            packageName = "com.user.app"
-            flags = 0
-        }
+        val userApp = createPackageInfo("com.user.app", "User App", 0)
         shadowPackageManager.installPackage(userApp)
 
         val result = repository.getAllApps()
@@ -61,9 +56,9 @@ class AppListRepositoryTest {
     @Test
     fun `getAllApps sorts results by app name`() = runBlocking {
         // Install apps in reverse alphabetical order
-        val appC = createUserApp("com.test.c", "Zeta App")
-        val appB = createUserApp("com.test.b", "Beta App")
-        val appA = createUserApp("com.test.a", "Alpha App")
+        val appC = createPackageInfo("com.test.c", "Zeta App", 0)
+        val appB = createPackageInfo("com.test.b", "Beta App", 0)
+        val appA = createPackageInfo("com.test.a", "Alpha App", 0)
 
         shadowPackageManager.installPackage(appC)
         shadowPackageManager.installPackage(appB)
@@ -83,7 +78,7 @@ class AppListRepositoryTest {
 
     @Test
     fun `getAllApps includes package name and app name`() = runBlocking {
-        val app = createUserApp("com.test.sample", "Sample App")
+        val app = createPackageInfo("com.test.sample", "Sample App", 0)
         shadowPackageManager.installPackage(app)
 
         val result = repository.getAllApps()
@@ -106,9 +101,9 @@ class AppListRepositoryTest {
 
     @Test
     fun `getAllApps handles multiple user apps`() = runBlocking {
-        val app1 = createUserApp("com.app1", "App One")
-        val app2 = createUserApp("com.app2", "App Two")
-        val app3 = createUserApp("com.app3", "App Three")
+        val app1 = createPackageInfo("com.app1", "App One", 0)
+        val app2 = createPackageInfo("com.app2", "App Two", 0)
+        val app3 = createPackageInfo("com.app3", "App Three", 0)
 
         shadowPackageManager.installPackage(app1)
         shadowPackageManager.installPackage(app2)
@@ -122,8 +117,8 @@ class AppListRepositoryTest {
 
     @Test
     fun `getAllApps handles apps with same name`() = runBlocking {
-        val app1 = createUserApp("com.test.1", "Same Name")
-        val app2 = createUserApp("com.test.2", "Same Name")
+        val app1 = createPackageInfo("com.test.1", "Same Name", 0)
+        val app2 = createPackageInfo("com.test.2", "Same Name", 0)
 
         shadowPackageManager.installPackage(app1)
         shadowPackageManager.installPackage(app2)
@@ -137,10 +132,7 @@ class AppListRepositoryTest {
 
     @Test
     fun `getAllApps handles empty app name gracefully`() = runBlocking {
-        val app = ApplicationInfo().apply {
-            packageName = "com.test.empty"
-            flags = 0
-        }
+        val app = createPackageInfo("com.test.empty", "", 0)
         shadowPackageManager.installPackage(app)
 
         val result = repository.getAllApps()
@@ -149,11 +141,14 @@ class AppListRepositoryTest {
         assertNotNull(result)
     }
 
-    private fun createUserApp(packageName: String, label: String): ApplicationInfo {
-        return ApplicationInfo().apply {
+    private fun createPackageInfo(packageName: String, label: String, flags: Int): PackageInfo {
+        return PackageInfo().apply {
             this.packageName = packageName
-            this.flags = 0 // Not a system app
-            this.name = label
+            this.applicationInfo = ApplicationInfo().apply {
+                this.packageName = packageName
+                this.flags = flags
+                this.nonLocalizedLabel = label
+            }
         }
     }
 }
