@@ -1,9 +1,0 @@
-{
-  "timestamp": "2026-01-31T17:05:00Z",
-  "metrics": {
-    "test_status": "failed",
-    "failed_tests": 7,
-    "total_tests": 108,
-    "error": "ExclusionsViewModelTest failures, HomeViewModelTest UncaughtExceptionsBeforeTest"
-  }
-}
