@@ -316,6 +316,8 @@ def verify_security() -> VerificationResult:
         "webhook_validator_exists": False,
         "gitignore_local_properties": False,
         "gitignore_keystore": False,
+        "encrypted_preferences_exists": False,
+        "webhook_uses_encryption": False,
     }
 
     # ソースコード内にWebhook URLがハードコードされていないことを確認
@@ -330,6 +332,16 @@ def verify_security() -> VerificationResult:
 
     validator_file = MAIN_SRC / "data" / "slack" / "SlackWebhookValidator.kt"
     checks["webhook_validator_exists"] = validator_file.exists()
+
+    # 暗号化ストレージの存在確認 (ISS-001対応)
+    encrypted_prefs_file = MAIN_SRC / "data" / "settings" / "EncryptedPreferences.kt"
+    checks["encrypted_preferences_exists"] = encrypted_prefs_file.exists()
+
+    # PreferencesDataStoreがEncryptedPreferencesを使用しているか確認
+    prefs_datastore_file = MAIN_SRC / "data" / "settings" / "PreferencesDataStore.kt"
+    if prefs_datastore_file.exists():
+        content = prefs_datastore_file.read_text()
+        checks["webhook_uses_encryption"] = "encryptedPreferences" in content
 
     gitignore = PROJECT_ROOT / ".gitignore"
     if gitignore.exists():
@@ -346,9 +358,54 @@ def verify_security() -> VerificationResult:
         actual_output=checks,
         expected_output="全チェック項目がTrue",
         interpretation=(
-            "セキュリティ要件を満たしている（Webhook URLハードコードなし、バリデーション実装済み、秘匿ファイルgitignore済み）"
+            "セキュリティ要件を満たしている（Webhook URL暗号化保存、ハードコードなし、バリデーション実装済み、秘匿ファイルgitignore済み）"
             if passed
             else f"セキュリティ問題: {[k for k, v in checks.items() if not v]}"
+        ),
+    )
+
+
+def verify_worker_error_notification() -> VerificationResult:
+    """ISS-007: Worker失敗時のエラー通知
+
+    Worker失敗時にユーザー（保護者）に通知を表示する機能を検証
+    """
+
+    notification_helper_file = MAIN_SRC / "platform" / "NotificationHelper.kt"
+    worker_file = MAIN_SRC / "workers" / "DailySlackReportWorker.kt"
+    manifest_file = APP_SRC / "main" / "AndroidManifest.xml"
+
+    checks = {
+        "notification_helper_exists": notification_helper_file.exists(),
+        "worker_uses_notification": False,
+        "manifest_has_notification_permission": False,
+        "creates_notification_channel": False,
+    }
+
+    if notification_helper_file.exists():
+        content = notification_helper_file.read_text()
+        checks["creates_notification_channel"] = "NotificationChannel" in content
+
+    if worker_file.exists():
+        content = worker_file.read_text()
+        checks["worker_uses_notification"] = "notificationHelper" in content or "showSlackSendFailureNotification" in content
+
+    if manifest_file.exists():
+        content = manifest_file.read_text()
+        checks["manifest_has_notification_permission"] = "POST_NOTIFICATIONS" in content
+
+    passed = all(checks.values())
+
+    return VerificationResult(
+        function_id="ISS-007",
+        scenario_name="Worker失敗時エラー通知",
+        passed=passed,
+        actual_output=checks,
+        expected_output="全チェック項目がTrue",
+        interpretation=(
+            "Worker失敗時のエラー通知機能が正しく実装されている"
+            if passed
+            else f"エラー通知機能の問題: {[k for k, v in checks.items() if not v]}"
         ),
     )
 
@@ -365,6 +422,7 @@ def main():
         verify_architecture_compliance(),
         verify_test_coverage_setup(),
         verify_security(),
+        verify_worker_error_notification(),
     ]
 
     print("=" * 60)

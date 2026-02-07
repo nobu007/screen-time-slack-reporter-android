@@ -124,10 +124,26 @@
       "no_hardcoded_webhook": true,
       "webhook_validator_exists": true,
       "gitignore_local_properties": true,
-      "gitignore_keystore": true
+      "gitignore_keystore": true,
+      "encrypted_preferences_exists": true,
+      "webhook_uses_encryption": true
     },
     "expected_output": "全チェック項目がTrue",
     "error_message": null,
-    "interpretation": "セキュリティ要件を満たしている（Webhook URLハードコードなし、バリデーション実装済み、秘匿ファイルgitignore済み）"
+    "interpretation": "セキュリティ要件を満たしている（Webhook URL暗号化保存、ハードコードなし、バリデーション実装済み、秘匿ファイルgitignore済み）"
+  },
+  {
+    "function_id": "ISS-007",
+    "scenario_name": "Worker失敗時エラー通知",
+    "passed": true,
+    "actual_output": {
+      "notification_helper_exists": true,
+      "worker_uses_notification": true,
+      "manifest_has_notification_permission": true,
+      "creates_notification_channel": true
+    },
+    "expected_output": "全チェック項目がTrue",
+    "error_message": null,
+    "interpretation": "Worker失敗時のエラー通知機能が正しく実装されている"
   }
 ]

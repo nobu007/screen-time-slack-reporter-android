@@ -10,7 +10,9 @@ import jp.co.screentime.slackreporter.domain.model.AppSettings
 import jp.co.screentime.slackreporter.domain.model.SendResult
 import jp.co.screentime.slackreporter.domain.model.SendStatus
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,16 +25,37 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  */
 @Singleton
 class PreferencesDataStore @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val encryptedPreferences: EncryptedPreferences
 ) {
     private val dataStore = context.dataStore
+
+    init {
+        migrateWebhookUrlIfNeeded()
+    }
+
+    /**
+     * 平文DataStoreから暗号化ストレージへWebhook URLを1回限り移行
+     */
+    private fun migrateWebhookUrlIfNeeded() {
+        if (encryptedPreferences.isMigrated()) return
+
+        runBlocking {
+            val plainUrl = dataStore.data.first()[PreferencesKeys.SLACK_WEBHOOK_URL]
+            if (!plainUrl.isNullOrEmpty()) {
+                encryptedPreferences.setWebhookUrl(plainUrl)
+                dataStore.edit { it.remove(PreferencesKeys.SLACK_WEBHOOK_URL) }
+            }
+            encryptedPreferences.setMigrated()
+        }
+    }
 
     /**
      * 設定のFlowを取得
      */
     val settingsFlow: Flow<AppSettings> = dataStore.data.map { prefs ->
         AppSettings(
-            webhookUrl = prefs[PreferencesKeys.SLACK_WEBHOOK_URL] ?: "",
+            webhookUrl = encryptedPreferences.getWebhookUrl(),
             sendEnabled = prefs[PreferencesKeys.SEND_ENABLED] ?: false,
             sendHour = prefs[PreferencesKeys.SEND_HOUR] ?: 21,
             sendMinute = prefs[PreferencesKeys.SEND_MINUTE] ?: 0,
@@ -65,12 +88,10 @@ class PreferencesDataStore @Inject constructor(
     }
 
     /**
-     * Webhook URLを保存
+     * Webhook URLを暗号化ストレージに保存
      */
     suspend fun setWebhookUrl(url: String) {
-        dataStore.edit { prefs ->
-            prefs[PreferencesKeys.SLACK_WEBHOOK_URL] = url
-        }
+        encryptedPreferences.setWebhookUrl(url)
     }
 
     /**
@@ -143,3 +164,4 @@ class PreferencesDataStore @Inject constructor(
         }
     }
 }
+

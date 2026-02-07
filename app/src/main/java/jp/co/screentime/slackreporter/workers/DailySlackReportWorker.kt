@@ -10,6 +10,7 @@ import jp.co.screentime.slackreporter.data.repository.SettingsRepository
 import jp.co.screentime.slackreporter.data.repository.UsageRepository
 import jp.co.screentime.slackreporter.domain.usecase.SendDailyReportUseCase
 import jp.co.screentime.slackreporter.domain.model.SendStatus
+import jp.co.screentime.slackreporter.platform.NotificationHelper
 import kotlinx.coroutines.flow.first
 
 /**
@@ -23,7 +24,8 @@ class DailySlackReportWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val settingsRepository: SettingsRepository,
     private val usageRepository: UsageRepository,
-    private val sendDailyReportUseCase: SendDailyReportUseCase
+    private val sendDailyReportUseCase: SendDailyReportUseCase,
+    private val notificationHelper: NotificationHelper
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -44,8 +46,11 @@ class DailySlackReportWorker @AssistedInject constructor(
             return Result.success()
         }
 
-        // Usage Accessが無効なら失敗
+        // Usage Accessが無効なら失敗（通知を表示）
         if (!usageRepository.isUsageAccessGranted()) {
+            notificationHelper.showSlackSendFailureNotification(
+                "使用状況へのアクセス権限が無効です。設定から権限を許可してください。"
+            )
             return Result.failure()
         }
 
@@ -55,10 +60,13 @@ class DailySlackReportWorker @AssistedInject constructor(
         return when (sendResult.status) {
             SendStatus.SUCCESS -> Result.success()
             SendStatus.FAILED -> {
+                val errorMessage = sendResult.errorMessage ?: "不明なエラー"
                 // ネットワークエラーの可能性があるためリトライ
                 if (runAttemptCount < 3) {
                     Result.retry()
                 } else {
+                    // 最終失敗時のみ通知を表示
+                    notificationHelper.showSlackSendFailureNotification(errorMessage)
                     Result.failure()
                 }
             }
@@ -66,3 +74,4 @@ class DailySlackReportWorker @AssistedInject constructor(
         }
     }
 }
+
