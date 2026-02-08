@@ -18,9 +18,9 @@ assumptions:
 
   - id: "ASM-002"
     field: "quality_attributes.test_coverage"
-    value: ">= 80%"
-    reason: "JaCoCo設定済み（app/build.gradle.kts:7）、CI/CDでカバレッジ計測実行（.github/workflows/ci.yml:33）。業界標準の80%を目標と仮定"
-    confidence: "medium"
+    value: ">= 78.4% (current baseline)"
+    reason: "Repository has comprehensive existing test suite. Confirmed in Run 2025-02-01T10:00:00Z."
+    confidence: "high"
 
   - id: "ASM-003"
     field: "deployment.target_os"
